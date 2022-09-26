@@ -12,6 +12,7 @@ hold on
 %Concrete floor
 surf([-1.8,-1.8;1.8,1.8],[-1.8,1.8;-1.8,1.8],[0.01,0.01;0.01,0.01],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
-%Create devices
+%Create Linear UR3
 robotChef = LinearUR3(false); %robotChef - resp for actions of cooking and serving pancake
-robotDispenser = 0; %robotDispenser - resp. for pouring liquids (batter, syrup)
+robotDispenser; %robotDis
+%robot.base %necessary? used to set the position of the 
