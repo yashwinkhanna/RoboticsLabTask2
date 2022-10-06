@@ -1,5 +1,5 @@
 
-% FROM LAB 3 SOLUTION
+% FROM LAB 3 SOLUTION NEW
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create robot and environment
