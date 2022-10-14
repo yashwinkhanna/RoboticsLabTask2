@@ -7,25 +7,25 @@
 clf
 
 % Make a 3DOF model
-% L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2])
-%     %change pi/2 to 0 if we want to change it back to top down arm set up 
-%     %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
-% %L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
-% L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2])    
-% L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2])
+L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2]);
+    %change pi/2 to 0 if we want to change it back to top down arm set up 
+    %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
+%L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
+L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2]);    
+L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2]);
 
-% robot = SerialLink([L1 L2 L3],'name','myRobot');                     
+robot = SerialLink([L1 L2 L3],'name','myRobot');                     
 
-% % Make workspace big except in the negative z
-% workspace = [-4 4 -4 4 0 4];                                       % Set the size of the workspace when drawing the robot
-%         
-% scale = 0.5;
-% 
-% % Create a vector of initial joint angles        
-% q = zeros(1,3);                                                     
-%        
-% % Plot the robot
-% robot.plot(q,'workspace',workspace,'scale',scale);                  
+% Make workspace big except in the negative z
+workspace = [-4 4 -4 4 0 4];                                       % Set the size of the workspace when drawing the robot
+        
+scale = 0.5;
+
+% Create a vector of initial joint angles        
+q = zeros(1,3);                                                     
+       
+% Plot the robot
+robot.plot(q,'workspace',workspace,'scale',scale);                  
 
     %change this to move the end-effector of dispensing bot 
  sandwich_pos = [1.5 ,-1, 0.7];
@@ -33,7 +33,7 @@ clf
 %  swiggle_pos2 = [1.6,-1.5,1];
 %  swiggle_pos3 = [2  ,-1  ,1];
 
-robot = DispensingBot2();
+%robot = DispensingBot2;
 
     %note - let us manually interact with the robot  
 %robot.model.teach;
@@ -64,7 +64,7 @@ path = jtraj (q,q1,50);
 
         %Animate actually makes the arm move 
         %i,: is just the saying the current ith row and all columns
-      robot.model.animate(path(i,:));
+      robot.animate(path(i,:));
       
         %drawnow() displays the arm movement 
       drawnow()
