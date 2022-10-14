@@ -1,4 +1,4 @@
-classdef DispensingBot2 < handle
+classdef UR3 < handle
     properties
         %> Robot model
         model;
@@ -28,21 +28,20 @@ classdef DispensingBot2 < handle
         % Given a name (optional), create and return a UR3 robot model
         function GetUR3Robot(self)
             pause(0.001);
-            name = ['DispensingBot2_',datestr(now,'yyyymmddTHHMMSSFFF')];
+            name = ['UR3_',datestr(now,'yyyymmddTHHMMSSFFF')];
 %             L1 = Link('d',0.1519,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]), 'offset',0);
 %             L2 = Link('d',0,'a',-0.24365,'alpha',0,'qlim', deg2rad([-360 360]), 'offset',0);
 %             L3 = Link('d',0,'a',-0.21325,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);
 %             L4 = Link('d',0.11235,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
 %             L5 = Link('d',0.08535,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
 %             L6 = Link('d',0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
-%              
-
-% L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2]);
-%     %change pi/2 to 0 if we want to change it back to top down arm set up 
-%     %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
-% %L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
-% L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2])   ; 
-% L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2]);
+             
+L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2]);
+    %change pi/2 to 0 if we want to change it back to top down arm set up 
+    %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
+%L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
+L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2]);    
+L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2]);
 
             self.model = SerialLink([L1 L2 L3],'name',name);
         end
@@ -52,7 +51,7 @@ classdef DispensingBot2 < handle
         % colour them in if data is available 
         function PlotAndColourRobot(self)%robot,workspace)
             for linkIndex = 0:self.model.n
-                [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['DBLink',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>                
+                [ faceData, vertexData, plyData{linkIndex + 1} ] = plyread(['ur3link_',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>                
                 self.model.faces{linkIndex + 1} = faceData;
                 self.model.points{linkIndex + 1} = vertexData;
             end
