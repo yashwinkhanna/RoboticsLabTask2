@@ -7,12 +7,16 @@
 clf
 
 % Make a 3DOF model
-L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2]);
-    %change pi/2 to 0 if we want to change it back to top down arm set up 
-    %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
-%L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
-L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2]);    
-L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2]);
+% L1 = Link('d',1,'a',1,'alpha',-pi,'qlim',[-pi/2 pi/2]);
+%     %change pi/2 to 0 if we want to change it back to top down arm set up 
+%     %L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi/2 pi/2])
+% %L2 = Link('d',0,'a',1,'alpha',pi/2,'qlim',[-pi/2 pi/2])
+% L2 = Link('d',0,'a',1,'alpha',pi,'qlim',[-pi/2 pi/2]);    
+% L3 = Link('d',-0.5,'a',0,'alpha',pi,'qlim',[-pi/2 pi/2]);
+
+L1 = Link('d',0,'a',0,'alpha',0,'qlim',deg2rad([-360 360]), 'offset',0);
+L2 = Link('d',0.2577,'a',0.3,'alpha',0,'qlim', deg2rad([-360 360]), 'offset',0);
+L3 = Link('d',0.2577*2,'a',0.25,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);
 
 robot = SerialLink([L1 L2 L3],'name','myRobot');                     
 
