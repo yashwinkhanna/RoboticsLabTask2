@@ -8,18 +8,16 @@ set(0,'DefaultFigureWindowStyle','docked')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create robots and environment           
 
-    % To retain current plot or graphic while opening the next 
+    % To retain current plot or graphic 
 hold on; 
 
     % Displaying a concrete floor
         % note - the [x,x,x,x],[y,y,y,y],[z,z,z,z] are corner points so we
                  % know where to map the image
-surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[0.01,0.01;0.01,0.01],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-
+surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
     %Table
-%PlaceObject('kitchen_test.ply', [0,0,0]);
-
+PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);
 
     %Move the robots to this coordinate
  irb_pos = [ 0.1 ,0.49, 0.01];
@@ -27,14 +25,14 @@ surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[0.01,0.01;0.01,0.01],'CData',imrea
 
     %Initialise the IRB and UR3 robot
 irb = IRB_910sc;
-ur3 = LinearUR3(false);
+ur3 = Linear_UR3(false);
 
     %Manually interact with the robots  
 irb.model.teach;
 ur3.model.teach;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move IRB to a location
+%% Move IRB to grill position
 
     %Create a vector of initial joint angles, in this case the joint angles 
     %are zero
@@ -132,7 +130,7 @@ path = jtraj (q1,qh,50);
      end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move UR3 to a location
+%% Move UR3 to pancake position
 
     %Create a vector of initial joint angles, in this case the joint angles 
     %are zero

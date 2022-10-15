@@ -4,7 +4,7 @@ classdef IRB_910sc < handle
         model;
         
         %> workspace
-        workspace = [-0.6 0.6 -0.6 0.6 0 1.1];   %[-0.6 0.6 -0.6 0.6 -0.2 1.1]
+        workspace = [-0.6 0.6 -0.6 0.6 -0.67 1.1];   %[-0.6 0.6 -0.6 0.6 -0.2 1.1]
       
     end
     

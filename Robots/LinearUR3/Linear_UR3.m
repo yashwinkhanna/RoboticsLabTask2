@@ -1,17 +1,17 @@
-classdef LinearUR3 < handle
+classdef Linear_UR3 < handle
     properties
         %> Robot model
         model;
         
         %>
-        workspace = [-2 2 -2 2 -0.3 2];   
+        workspace = [-2 2 -2 2 -0.67 2];   
         
         %> Flag to indicate if gripper is used
         useGripper = false;        
     end
     
     methods%% Class for UR3 robot simulation
-function self = LinearUR3(useGripper)
+function self = Linear_UR3(useGripper)
     self.useGripper = useGripper;
     
 %> Define the boundaries of the workspace
