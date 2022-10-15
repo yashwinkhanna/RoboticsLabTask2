@@ -56,6 +56,7 @@ function GetUR3Robot(self)
     
     % Rotate robot to the correct orientation
     self.model.base = self.model.base * trotx(pi/2) * troty(pi/2);
+
 end
 %% PlotAndColourRobot
 % Given a robot index, add the glyphs (vertices and faces) and
