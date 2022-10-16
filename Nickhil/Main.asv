@@ -178,34 +178,6 @@ path = jtraj (q,q1,50);
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Move UR3 up to lift pancake 
 
-    %We do nverse kinematics to find joint angles needed to move to the 
-    %ur3_pos coords.
-            %note - trotx(pi) makes end-effector face down when going to  
-                    %coords, so arm does not go into floor. 
-    q2 = ur3.model.ikine(transl(0.1) * trotx(pi), q, [1,1,1,0,0,0]);
-
-    %jtraj creates a path between one set of joint positions (q) and a second
-    %set of joint positions (q1) using a certain amount of set increments (50)
-path = jtraj (q1,q2,50);
-
-    %Put the jtraj to action usiing for loop 
-     for i = 1:50
-        pause(0.01);
-
-        %Animate actually makes the arm move 
-        %i,: is just the saying the current ith row and all columns
-      ur3.model.animate(path(i,:));
- 
-      %This makes the base of our spatula equal to the trajectory of our
-      %robot arm found using path variable above, hence making it look like the spatula is attatched to the
-      %end-effector
-            %These are from Lab 4 extension 
-  create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
-  create_spatula.spatula{1}.animate(0);
-
-        %drawnow() displays the arm movement 
-      drawnow()
-     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Rotate UR3 to flip pancake

@@ -9,7 +9,7 @@ clf
 set(0,'DefaultFigureWindowStyle','docked')              
 
     %move the IRB robot to this coordinate
- grill_pos = [-0.3 ,0.2, 0];
+ grill_pos = [0.1 ,0.2, 0];
 
     %initialise IRB robot
 robot = IRB_910sc;

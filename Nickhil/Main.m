@@ -17,7 +17,7 @@ hold on;
 surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
     %Table
-PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);
+PlaceObject('kitchen_test.ply', [-0.25,0.5,-0.07]);
 
     %Move the robots to this coordinate
  irb_pos = [ 0.1 ,0.49, 0.01];
