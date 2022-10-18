@@ -81,6 +81,5 @@ Kv = 0.3; %linear velocity gain
 Kw = 0.8; %angular velocity gain;
 
 qtest = [1,1.5,1,0,0,0];
-J = robot.model.jacob0(qtest);
-% dq = pinv(J)*
+
 

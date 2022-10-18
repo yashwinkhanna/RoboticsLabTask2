@@ -1,9 +1,12 @@
 %% Robotics
 % Lab 9 - Question 1 - Resolved Motion Rate Control in 6DOF
+
 function RMRC_Assessment()
+clf;
+
 % 1.1) Set parameters for the simulation
 ur3 = Linear_UR3(false);        % Load robot model
-t = 10;             % Total time (s)
+t = 50;             % Total time (s)
 deltaT = 0.02;      % Control frequency
 steps = t/deltaT;   % No. of steps for simulation
 delta = 2*pi/steps; % Small angle change
@@ -19,28 +22,28 @@ x = zeros(3,steps);             % Array for x-y-z trajectory
 positionError = zeros(3,steps); % For plotting trajectory error
 angleError = zeros(3,steps);    % For plotting trajectory error
 
-pause(5);
+% pause(5);
 
 % 1.3) Set up trajectory, initial pose
-s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
-for i=1:steps
-    x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
-    x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
-    x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
-    theta(1,i) = 0;                 % Roll angle 
-    theta(2,i) = 5*pi/9;            % Pitch angle
-    theta(3,i) = 0;                 % Yaw angle
-end
- 
-    %to move in a straight line (but at an angle because of reach limits?)
+% s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
 % for i=1:steps
-%     x(1,i) = 0; % Points in x
-%     x(2,i) = i; % Points in y
-%     x(3,i) = 0; % Points in z
+%     x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
+%     x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
+%     x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
 %     theta(1,i) = 0;                 % Roll angle 
-%     theta(2,i) = 0;            % Pitch angle
+%     theta(2,i) = 5*pi/9;            % Pitch angle
 %     theta(3,i) = 0;                 % Yaw angle
 % end
+ 
+    %to move in a straight line (but at an angle because of reach limits?)
+for i=1:steps
+    x(1,i) = 0; % Points in x
+    x(2,i) = i; % Points in y
+    x(3,i) = 0; % Points in z
+    theta(1,i) = 0;                 % Roll angle 
+    theta(2,i) = 0;            % Pitch angle
+    theta(3,i) = 0;                 % Yaw angle
+end
 
 
 
@@ -81,10 +84,23 @@ for i = 1:steps-1
     angleError(:,i) = deltaTheta;                                           % For plotting
 end
 
-% 1.5) Plot the results
-figure(1)
-plot3(x(1,:),x(2,:),x(3,:),'k.','LineWidth',1)
-ur3.model.plot(qMatrix,'trail','r-')
+% % 1.5) Plot the results
+% figure(1)
+% plot3(x(1,:),x(2,:),x(3,:),'k.','LineWidth',1)
+% ur3.model.plot3d(qMatrix) %,'trail','r-')
+% ur3.model.
+
+for i = 1:steps
+  pause(0.01);
+
+    %Animate actually makes the arm move 
+    %i,: is just the saying the current ith row and all columns
+%   plot3(x(1,i),x(2,i),x(3,i),'k.','LineWidth',1)
+  ur3.model.animate(qMatrix(i,:));
+
+    %drawnow() displays the arm movement 
+  drawnow()
+end
 
 % for i = 1:7
 %     figure(2)
@@ -121,3 +137,5 @@ ur3.model.plot(qMatrix,'trail','r-')
 % plot(m,'k','LineWidth',1)
 % refline(0,epsilon)
 % title('Manipulability')
+
+end
