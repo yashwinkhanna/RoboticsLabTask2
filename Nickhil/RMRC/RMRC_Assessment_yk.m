@@ -11,7 +11,7 @@ deltaT = 0.02;      % Control frequency
 steps = t/deltaT;   % No. of steps for simulation
 delta = 2*pi/steps; % Small angle change
 epsilon = 0.1;      % Threshold value for manipulability/Damped Least Squares
-W = diag([1 1 1 0.1 0.1 0.1]);    % Weighting matrix for the velocity vector
+W = diag([0.1 0.1 0.1 0.1 0.1 0.1]);    % Weighting matrix for the velocity vector
 
 % 1.2) Allocate array data
 m = zeros(steps,1);             % Array for Measure of Manipulability
@@ -25,31 +25,39 @@ angleError = zeros(3,steps);    % For plotting trajectory error
 % pause(5);
 
 % 1.3) Set up trajectory, initial pose
-s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
-for i=1:steps
-    x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
-    x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
-    x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
-    theta(1,i) = 0;                 % Roll angle 
-    theta(2,i) = 5*pi/9;            % Pitch angle
-    theta(3,i) = 0;                 % Yaw angle
-end
- 
-    %to move in a straight line (but at an angle because of reach limits?)
+% s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
 % for i=1:steps
-%     x(1,i) = 0; % Points in x
-%     x(2,i) = i; % Points in y
-%     x(3,i) = 0; % Points in z
+%     x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
+%     x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
+%     x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
 %     theta(1,i) = 0;                 % Roll angle 
-%     theta(2,i) = 0;            % Pitch angle
+%     theta(2,i) = 5*pi/9;            % Pitch angle
 %     theta(3,i) = 0;                 % Yaw angle
 % end
 
+% ur3.model.fkine(qMatrix(1))
+dist_incr = 1/steps; %DISTANCE/num of steps
+loc = ur3.model.fkine(qMatrix(1,:));
+x(1,1) = loc(1,4) + dist_incr;
+
+    %to move in a straight line (but at an angle because of reach limits?)
+for i=2:steps
+%     loc = ur3.model.fkine(qMatrix(i,:));
+    x(1,i) = x(1, i-1) + dist_incr; % Points in x
+    x(2,i) = loc(2, 4); % Points in y
+    x(3,i) = loc(3, 4); % Points in z
+    theta(1,i) = 0;                 % Roll angle 
+    theta(2,i) = 0;            % Pitch angle
+    theta(3,i) = 0;                 % Yaw angle
+end
 
 
 T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1];          % Create transformation of first point and angle
 q0 = zeros(1,7);                                                            % Initial guess for joint angles
 qMatrix(1,:) = ur3.model.ikcon(T,q0);                                            % Solve joint angles to achieve first waypoint
+
+
+
 
 % 1.4) Track the trajectory with RMRC
 for i = 1:steps-1
