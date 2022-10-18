@@ -23,32 +23,30 @@ positionError = zeros(3,steps); % For plotting trajectory error
 angleError = zeros(3,steps);    % For plotting trajectory error
 
 % pause(5);
+displacement = 0.5; %input
+loc = ur3.model.fkine(qMatrix(1, :));
+loc_x = loc(1, 4);
+loc_y = loc(2, 4);
+loc_z = loc(3, 4);
 
-% 1.3) Set up trajectory, initial pose
-% s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
-% for i=1:steps
-%     x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
-%     x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
-%     x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
-%     theta(1,i) = 0;                 % Roll angle 
-%     theta(2,i) = 5*pi/9;            % Pitch angle
-%     theta(3,i) = 0;                 % Yaw angle
-% end
+rpy = tr2rpy(loc);
+loc_r = rpy(1);
+loc_p = rpy(2);
+loc_yw = rpy(3);
 
-% ur3.model.fkine(qMatrix(1))
-dist_incr = 1/steps; %DISTANCE/num of steps
-loc = ur3.model.fkine(qMatrix(1,:));
-x(1,1) = loc(1,4) + dist_incr;
+s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
+for i=1:steps
+    x(1,i) = ((1-s(i))*-displacement)+loc_x + (s(i)*displacement)+loc_x; % Points in x
+    x(2,i) = (1-s(i))*-loc_y + s(i)*-loc_y; % Points in y
+%     x(3,i) = (1-s(i))*0.25 + s(i)*0.5; % Points in z
 
-    %to move in a straight line (but at an angle because of reach limits?)
-for i=2:steps
-%     loc = ur3.model.fkine(qMatrix(i,:));
-    x(1,i) = x(1, i-1) + dist_incr; % Points in x
-    x(2,i) = loc(2, 4); % Points in y
-    x(3,i) = loc(3, 4); % Points in z
-    theta(1,i) = 0;                 % Roll angle 
-    theta(2,i) = 0;            % Pitch angle
-    theta(3,i) = 0;                 % Yaw angle
+%     x(1,i) = -1; %(1-s(i)) + s(i); % Points in x
+%     x(2,i) = 0.35; %(1-s(i)) + s(i); % Points in y
+    x(3,i) = loc_z; %(1-s(i)); % + s(i); % Points in z
+    
+    theta(1,i) = loc_r; %0;                 % Roll angle 
+    theta(2,i) = loc_p; %pi/2; %5*pi/9;            % Pitch angle
+    theta(3,i) = loc_yw; %0;                 % Yaw angle
 end
 
 
