@@ -9,7 +9,7 @@ ur3 = Linear_UR3(false);        % Load robot model
 t = 10;             % Total time (s)
 deltaT = 0.02;      % Control frequency
 steps = t/deltaT;   % No. of steps for simulation
-delta = 2*pi/steps; % Small angle change
+% delta = 2*pi/steps; % Small angle change
 epsilon = 0.1;      % Threshold value for manipulability/Damped Least Squares
 W = diag([0.1 0.1 0.1 0.1 0.1 0.1]);    % Weighting matrix for the velocity vector
 
