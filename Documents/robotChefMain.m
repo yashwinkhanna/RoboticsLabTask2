@@ -14,14 +14,28 @@ hold on;
     % Displaying a concrete floor
         % note - the [x,x,x,x],[y,y,y,y],[z,z,z,z] are corner points so we
                  % know where to map the image
-surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+surf([-2,-2;3.25,3.25],[-2,2;-2,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
     %Table
-PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);
+PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
+hold on;
 
-    %Move the robots to this coordinate
- irb_pos = [ 0.1 ,0.49, 0.01];
- ur3_pos = [ 0.1 ,0.4, 0];
+PlaceObject('kitchenenvironment.ply', [-2,-2,-0.7]);     %Loading in kitchen environment
+hold on;
+
+PlaceObject('cookingplate.ply', [2,0,0]);     %Loading in kitchen environment
+hold on;
+
+PlaceObject('griddle.ply', [-0.35,-0.15,0]);     %Loading in kitchen environment
+hold on;
+
+PlaceObject('pancake_150.ply', [-0.6,0,0.1]);     %Loading in kitchen environment
+hold on;
+
+
+    %Move the robots end effector to this coordinate
+ irb_pos = [ -1, 0, 0.01];
+ ur3_pos = [ 0.1,0.4, 0];
 
     %Initialise the IRB and UR3 robot
 irb = IRB_910sc;

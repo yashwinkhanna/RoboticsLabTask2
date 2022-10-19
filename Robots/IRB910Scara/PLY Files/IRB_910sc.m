@@ -40,7 +40,7 @@ classdef IRB_910sc < handle
 %             self.model = SerialLink(L,'name',name);
 
                 %this moves the robot base position 
-            self.model.base = self.model.base * transl(0.5,0.5,0);
+            self.model.base = self.model.base * transl(-1.25,0,0);
         end
 
         %% PlotAndColourRobot

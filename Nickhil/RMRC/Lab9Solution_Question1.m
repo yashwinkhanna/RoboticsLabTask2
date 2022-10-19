@@ -20,24 +20,29 @@ positionError = zeros(3,steps); % For plotting trajectory error
 angleError = zeros(3,steps);    % For plotting trajectory error
 
 % 1.3) Set up trajectory, initial pose
-% s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
-% for i=1:steps
-%     x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
-%     x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
-%     x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
-%     theta(1,i) = 0;                 % Roll angle 
-%     theta(2,i) = 5*pi/9;            % Pitch angle
-%     theta(3,i) = 0;                 % Yaw angle
-% end
-
+s = lspb(0,1,steps);                % Trapezoidal trajectory scalar
 for i=1:steps
-    x(1,i) = 0; % Points in x
-    x(2,i) = i; % Points in y
-    x(3,i) = 0; % Points in z
+    x(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
+    x(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
+%     x(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
+
+%     x(1,i) = (1-s(i)) + s(i); % Points in x
+%     x(2,i) = (1-s(i)) + s(i); % Points in y
+    x(3,i) = 0.25; %(1-s(i)); % + s(i); % Points in z
+    
     theta(1,i) = 0;                 % Roll angle 
-    theta(2,i) = 0;            % Pitch angle
+    theta(2,i) = 0; %5*pi/9;            % Pitch angle
     theta(3,i) = 0;                 % Yaw angle
 end
+
+% for i=1:steps
+%     x(1,i) = 0; % Points in x
+%     x(2,i) = i; % Points in y
+%     x(3,i) = 0; % Points in z
+%     theta(1,i) = 0;                 % Roll angle 
+%     theta(2,i) = 0;            % Pitch angle
+%     theta(3,i) = 0;                 % Yaw angle
+% end
 
 T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1];          % Create transformation of first point and angle
 q0 = zeros(1,6);                                                            % Initial guess for joint angles
