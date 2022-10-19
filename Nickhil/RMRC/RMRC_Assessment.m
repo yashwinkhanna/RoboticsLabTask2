@@ -6,12 +6,12 @@ clf;
 
 % 1.1) Set parameters for the simulation
 ur3 = Linear_UR3(false);        % Load robot model
-t = 50;             % Total time (s)
+t = 100;             % Total time (s)
 deltaT = 0.02;      % Control frequency
 steps = t/deltaT;   % No. of steps for simulation
 delta = 2*pi/steps; % Small angle change
 epsilon = 0.1;      % Threshold value for manipulability/Damped Least Squares
-W = diag([1 1 1 0.1 0.1 0.1]);    % Weighting matrix for the velocity vector
+W = diag([0.1 0.1 0.1 0.1 0.1 0.1]);    % Weighting matrix for the velocity vector
 
 % 1.2) Allocate array data
 m = zeros(steps,1);             % Array for Measure of Manipulability
@@ -34,18 +34,16 @@ angleError = zeros(3,steps);    % For plotting trajectory error
 %     theta(2,i) = 5*pi/9;            % Pitch angle
 %     theta(3,i) = 0;                 % Yaw angle
 % end
- 
+%  
     %to move in a straight line (but at an angle because of reach limits?)
 for i=1:steps
-    x(1,i) = 0; % Points in x
-    x(2,i) = i; % Points in y
+    x(1,i) = i * 0.1; % Points in x
+    x(2,i) = 0; % Points in y
     x(3,i) = 0; % Points in z
     theta(1,i) = 0;                 % Roll angle 
     theta(2,i) = 0;            % Pitch angle
     theta(3,i) = 0;                 % Yaw angle
 end
-
-
 
 T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1];          % Create transformation of first point and angle
 q0 = zeros(1,7);                                                            % Initial guess for joint angles
@@ -91,8 +89,6 @@ end
 % ur3.model.
 
 for i = 1:steps
-  pause(0.01);
-
     %Animate actually makes the arm move 
     %i,: is just the saying the current ith row and all columns
 %   plot3(x(1,i),x(2,i),x(3,i),'k.','LineWidth',1)
