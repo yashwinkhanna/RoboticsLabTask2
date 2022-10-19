@@ -55,7 +55,7 @@ function GetUR3Robot(self)
     self.model = SerialLink(L,'name',name);
     
     % Rotate robot to the correct orientation
-    self.model.base = self.model.base * trotx(pi/2) * troty(pi/2);
+    self.model.base = self.model.base * trotx(pi/2) * troty(pi/2)* transl(-0.5,0,0);
 
 end
 %% PlotAndColourRobot
