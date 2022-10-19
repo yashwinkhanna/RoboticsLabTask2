@@ -40,7 +40,7 @@ surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[-0.65,-0.65;-0.65,-0.65],'CData',i
 PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);    %Table
 
 cakepos_irb = [ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
-cakepos_ur3 = [ -0.1   ,0.5,    0.12];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
+cakepos_ur3 = [ -0.1   ,0.5,    0];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
 
 irb = IRB_910sc;                                        %Initialise the IRB and UR3 robot
 ur3 = Linear_UR3(false);
@@ -159,8 +159,7 @@ q = zeros(1,7);
     %ur3_pos coords.
             %note - trotx(pi) makes end-effector face down when going to  
                     %coords, so arm does not go into floor. 
-%     q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
-q1 = [-0.1000         0    0.7854    1.5708    0.7854    1.5708         0]
+    q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
 
     %jtraj creates a path between one set of joint positions (q) and a second
     %set of joint positions (q1) using a certain amount of set increments (50)
@@ -188,7 +187,7 @@ path = jtraj (q,q1,50);
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Move UR3 up to lift pancake 
 
-resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.2);
+resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Rotate UR3 to flip pancake
