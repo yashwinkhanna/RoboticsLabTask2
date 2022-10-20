@@ -19,7 +19,7 @@ q = zeros(1,7);
 ur3 = Linear_UR3(false);
 
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-centerpnt = [-0.25,0,0.5];
+centerpnt = [-0.4,0,0.5];
 side = 0.3;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -50,10 +50,10 @@ end
 for i = 1 : size(tr,7)-1    
     for faceIndex = 1:size(faces,1)
         vertOnPlane = vertex(faces(faceIndex,1)',:);
-        [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:7,4,i)',tr(1:7,4,i+1)'); 
+        [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
         if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
             plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
-            display('Intersection');
+            display('UR3 is at a collison');
         end
     end    
 end
@@ -201,16 +201,23 @@ result = false;
 
 for qIndex = 1:size(qMatrix,1)
     % Get the transform of every joint (i.e. start and end of every link)
-    tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
+
+        %original line from lab - commented out and replaced with line below to show collision      
+        %points 
+    %tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
+
+        % can use either line 
+          [~, tr] = ur3.model.fkine(ur3.model.getpos);
+     %[~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
 
     % Go through each link and also each triangle face
-    for i = 1 : size(tr,7)-1    
+    for i = 1 : size(tr,3)-1    
         for faceIndex = 1:size(faces,1)
             vertOnPlane = vertex(faces(faceIndex,1)',:);
-            [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:7,4,i)',tr(1:7,4,i+1)'); 
+            [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
                 plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
-                display('Intersection');
+                display('UR3 is at a collison');
                 result = true;
                 if returnOnceFound
                     return
