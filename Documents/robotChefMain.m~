@@ -23,6 +23,7 @@
 
 
 
+
 %%
 clf
 clear all    
@@ -35,12 +36,26 @@ hold on; % To retain current plot or graphic
     % Displaying a concrete floor
         % note - the [x,x,x,x],[y,y,y,y],[z,z,z,z] are corner points so we
                  % know where to map the image
-surf([-1.8,-1.8;1.8,1.8],[-1.1,1.8;-1.1,1.8],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+surf([-2,-2;3.25,3.25],[-2.5,2;-2.5,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
-PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);    %Table
+surf([-2,-2;-2,-2],[-2.6,2;-2.6,2],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
+
+surf([-2,3.25;-2,3.25],[-2.6,-2.6;-2.6,-2.6],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
+
+%PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);    %Table
 
 cakepos_irb = [ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
-cakepos_ur3 = [ -0.1   ,0.5,    0];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
+cakepos_ur3 = [ -0.1   ,0.5,    0.12];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
+
+    %Table
+PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
+hold on;
+
+enviro = 0;
+if enviro == 1
+    environmentRPC;
+end
+
 
 irb = IRB_910sc;                                        %Initialise the IRB and UR3 robot
 ur3 = Linear_UR3(false);
@@ -53,8 +68,8 @@ ur3 = Linear_UR3(false);
 
 steps = 50;
 
-create_spatula = SpatulaClass(1); %SpatulaClass is a class and () indicates how many spatulas we want made
-create_spatula.SpatulaSpawn(1,-0.7,0.5,0);    %fn in SpatulaClass to create and spawn spatula at an x,y,theta coordinate   
+% create_spatula = SpatulaClass(1); %SpatulaClass is a class and () indicates how many spatulas we want made
+% create_spatula.SpatulaSpawn(1,-0.7,0.5,0);    %fn in SpatulaClass to create and spawn spatula at an x,y,theta coordinate   
 
 resolve = RMRC(); %initialise RMRC class. Class performs traj and movement animations
 
@@ -124,7 +139,7 @@ resolve = RMRC(); %initialise RMRC class. Class performs traj and movement anima
 %  delete(blastPlot_h);       %stop dispensing projection line
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% Move IRB back to home pose
+% %% 4) Move IRB back to home pose
 % 
 %     %Inverse kinematics to find joint angles needed to move to brick spawn
 %     %coords brick1_xyz.
@@ -149,7 +164,7 @@ resolve = RMRC(); %initialise RMRC class. Class performs traj and movement anima
 %      end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move UR3 to pancake position
+%% 5) Move UR3 to pancake position
 
     %Create a vector of initial joint angles, in this case the joint angles 
     %are zero
@@ -159,7 +174,8 @@ q = zeros(1,7);
     %ur3_pos coords.
             %note - trotx(pi) makes end-effector face down when going to  
                     %coords, so arm does not go into floor. 
-    q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
+%     q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
+q1 = [-0.1000         0    0.7854    1.5708    0.7854    1.5708         0]
 
     %jtraj creates a path between one set of joint positions (q) and a second
     %set of joint positions (q1) using a certain amount of set increments (50)
@@ -177,33 +193,70 @@ path = jtraj (q,q1,50);
       %robot arm found using path variable above, hence making it look like the spatula is attatched to the
       %end-effector
             %These are from Lab 4 extension 
-  create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
-  create_spatula.spatula{1}.animate(0);
+%   create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
+%   create_spatula.spatula{1}.animate(0);
 
         %drawnow() displays the arm movement 
       drawnow()
      end
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move UR3 up to lift pancake 
+%% 6) Move UR3 up to lift pancake 
 
-resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.4);
+resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Rotate UR3 to flip pancake
-
-% q0 = ur3.model.getpos; %reset q0 as current pos transform
-% q1 = q0; %copy q0 into q1
-% EE_rot = pi;
-% q1(7) = q1(7) + EE_rot;
-% path = jtraj(q0, q1, steps);
+% %% 7) Rotate UR3 to flip pancake
 % 
+% q0 = ur3.model.getpos
+% q1 = q0
+% EE_rot = pi;
+% q1(7) = q1(7)+EE_rot
+% path = jtraj(q0, q1, steps);
 % for i = 1:steps
-%     pause(0.01)
+%     pause(0.01);
 %     ur3.model.animate(path(i,:));
-%     create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
-%     create_spatula.spatula{1}.animate(0);
 %     
 %     drawnow()
 % end
+% 
+% resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);     %Move back to grill
+% 
+% q0 = ur3.model.getpos                                   %Flip and scoop cake from side
+% q1 = q0
+% EE_rot = pi;
+% q1(7) = q1(7)+EE_rot
+% path = jtraj(q0, q1, steps);
+% for i = 1:steps
+%     pause(0.01);
+%     ur3.model.animate(path(i,:));
+%     
+%     drawnow()
+% end
+% 
+% 
+% % %% 8) Move UR3 to side
+% % 
+% % resolve.axial(ur3, 'x', ur3.model.fkine(q1), 0.1)
+% % 
+% % %% 9) Flip spatula (UR3) back to normal
+% % 
+% % q0 = ur3.model.getpos
+% % q1 = q0
+% % EE_rot = pi;
+% % q1(7) = q1(7)+EE_rot
+% % path = jtraj(q0, q1, steps);
+% % for i = 1:steps
+% %     pause(0.01);
+% %     ur3.model.animate(path(i,:));
+% %     
+% %     drawnow()
+% % end
+% % 
+% % %% 10) move back down to grill level
+% % 
+% % resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);
+% % q1 = bot.model.getpos;
+% % resolve.axial(ur3, 'x', ur3.model.fkine(q1), -0.1);
+% % 
 

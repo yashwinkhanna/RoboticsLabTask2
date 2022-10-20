@@ -57,97 +57,6 @@ if enviro == 1
 end
 
 
-% PlaceObject('kitchenenvironment.ply', [-2,-2.5,-0.7]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('cookingplate.ply', [3,0,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('griddle.ply', [-0.35,-0.15,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('pancake_150.ply', [-0.6,0,0.1]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [-1.2,-0.4,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,-0.5,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0,0,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0.02]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0.04]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0.06]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0.08]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('plate.ply', [0.4,0,0.1]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('roboticshuman.ply', [-0.5,-1.25,-0.7]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('roboticsemergencystop.ply', [-1.25,-0.7,0.05]);     %Loading in kitchen environment
-% hold on;
-% 
-% PlaceObject('roboticsfireextinguisher.ply', [-1.5,-1.75,-0.7]);  %Loading fire extinguisher
-% hold on;
-% 
-% PlaceObject('roboticsfireextinguisher.ply', [2,-1.75,-0.7]);  %Loading fire extinguisher
-% hold on;
-% 
-% PlaceObject('roboticssafetyhat.ply', [-0.5,-1.25,1.3]);    %Loading a hard safety hat
-% hold on;
-% 
-% PlaceObject('roboticscamera.ply', [-0.5,0.75,0]); %Loading a camera
-% hold on;
-% 
-% PlaceObject('roboticsclock.ply', [1,-0.5,0.05]);  %loading an alarm clock
-% hold on;
-% 
-% PlaceObject('pancakemixbottle.ply', [-1.25,0.5,0]); %Loading a camera
-% hold on;
-% 
-% PlaceObject('pancakemixbottle.ply', [-1.15,0.5,0]); %Loading a camera
-% hold on;
-% 
-% PlaceObject('jammixbottle.ply', [-1.05,0.5,0]); %Loading a camera
-% hold on;
-% 
-% PlaceObject('chair.ply', [1.6,0,-0.65]); %Loading a camera
-% hold on;
-% 
-% PlaceObject('roboticsfence.ply', [-1,2,-0.7]);     %Loading in fence
-% hold on;
-% 
-% PlaceObject('roboticscone.ply', [3,1.5,-0.65]);    %Loading traffic cone
-% hold on;
-% 
-% PlaceObject('roboticscone.ply', [3,1,-0.65]);    %Loading traffic cone
-% hold on;
-% 
-% PlaceObject('roboticscone.ply', [3,0.5,-0.65]);    %Loading traffic cone
-% hold on;
-% 
-% PlaceObject('roboticscone.ply', [3,0,-0.65]);    %Loading traffic cone
-% hold on;
-% 
-% PlaceObject('roboticscone.ply', [3,-0.5,-0.65]);    %Loading traffic cone
-% hold on;
-
-
 irb = IRB_910sc;                                        %Initialise the IRB and UR3 robot
 ur3 = Linear_UR3(false);
 
@@ -159,8 +68,8 @@ ur3 = Linear_UR3(false);
 
 steps = 50;
 
-create_spatula = SpatulaClass(1); %SpatulaClass is a class and () indicates how many spatulas we want made
-create_spatula.SpatulaSpawn(1,-0.7,0.5,0);    %fn in SpatulaClass to create and spawn spatula at an x,y,theta coordinate   
+% create_spatula = SpatulaClass(1); %SpatulaClass is a class and () indicates how many spatulas we want made
+% create_spatula.SpatulaSpawn(1,-0.7,0.5,0);    %fn in SpatulaClass to create and spawn spatula at an x,y,theta coordinate   
 
 resolve = RMRC(); %initialise RMRC class. Class performs traj and movement animations
 
@@ -230,7 +139,7 @@ resolve = RMRC(); %initialise RMRC class. Class performs traj and movement anima
 %  delete(blastPlot_h);       %stop dispensing projection line
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% Move IRB back to home pose
+% %% 4) Move IRB back to home pose
 % 
 %     %Inverse kinematics to find joint angles needed to move to brick spawn
 %     %coords brick1_xyz.
@@ -255,7 +164,7 @@ resolve = RMRC(); %initialise RMRC class. Class performs traj and movement anima
 %      end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move UR3 to pancake position
+%% 5) Move UR3 to pancake position
 
     %Create a vector of initial joint angles, in this case the joint angles 
     %are zero
@@ -284,33 +193,70 @@ path = jtraj (q,q1,50);
       %robot arm found using path variable above, hence making it look like the spatula is attatched to the
       %end-effector
             %These are from Lab 4 extension 
-  create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
-  create_spatula.spatula{1}.animate(0);
+%   create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
+%   create_spatula.spatula{1}.animate(0);
 
         %drawnow() displays the arm movement 
       drawnow()
      end
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Move UR3 up to lift pancake 
+%% 6) Move UR3 up to lift pancake 
 
 resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Rotate UR3 to flip pancake
-
-% q0 = ur3.model.getpos; %reset q0 as current pos transform
-% q1 = q0; %copy q0 into q1
-% EE_rot = pi;
-% q1(7) = q1(7) + EE_rot;
-% path = jtraj(q0, q1, steps);
+% %% 7) Rotate UR3 to flip pancake
 % 
+% q0 = ur3.model.getpos
+% q1 = q0
+% EE_rot = pi;
+% q1(7) = q1(7)+EE_rot
+% path = jtraj(q0, q1, steps);
 % for i = 1:steps
-%     pause(0.01)
+%     pause(0.01);
 %     ur3.model.animate(path(i,:));
-%     create_spatula.spatula{1}.base = ur3.model.fkine(path(i,:));
-%     create_spatula.spatula{1}.animate(0);
 %     
 %     drawnow()
 % end
+% 
+% resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);     %Move back to grill
+% 
+% q0 = ur3.model.getpos                                   %Flip and scoop cake from side
+% q1 = q0
+% EE_rot = pi;
+% q1(7) = q1(7)+EE_rot
+% path = jtraj(q0, q1, steps);
+% for i = 1:steps
+%     pause(0.01);
+%     ur3.model.animate(path(i,:));
+%     
+%     drawnow()
+% end
+% 
+% 
+% % %% 8) Move UR3 to side
+% % 
+% % resolve.axial(ur3, 'x', ur3.model.fkine(q1), 0.1)
+% % 
+% % %% 9) Flip spatula (UR3) back to normal
+% % 
+% % q0 = ur3.model.getpos
+% % q1 = q0
+% % EE_rot = pi;
+% % q1(7) = q1(7)+EE_rot
+% % path = jtraj(q0, q1, steps);
+% % for i = 1:steps
+% %     pause(0.01);
+% %     ur3.model.animate(path(i,:));
+% %     
+% %     drawnow()
+% % end
+% % 
+% % %% 10) move back down to grill level
+% % 
+% % resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);
+% % q1 = bot.model.getpos;
+% % resolve.axial(ur3, 'x', ur3.model.fkine(q1), -0.1);
+% % 
 
