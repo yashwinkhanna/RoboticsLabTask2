@@ -14,7 +14,8 @@ close all;
 % scale = 0.5;
 % workspace = [-2 2 -2 2 -0.05 2];                                       % Set the size of the workspace when drawing the robot
 % robot.plot(q,'workspace',workspace,'scale',scale);                  % Plot the robot
-%         
+%    
+
 q = zeros(1,7);
 ur3 = Linear_UR3(false);
 
@@ -61,7 +62,9 @@ end
 % 2.6: Go through until there are no step sizes larger than 1 degree
 q1 = [   0,0,pi/4,0,0,0,0];
 q2 = [-0.8,0,pi/4,0,0,0,0];
-steps = 2;
+
+    steps = 2;
+
 while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
     steps = steps + 1;
 end
@@ -80,75 +83,78 @@ end
 
 
 %% Question 3
-% % 3.1: Manually move robot with teach and add some waypoints to qMatrix
-% robot.animate(q1);
-% robot.teach
+% 3.1: Manually move robot with teach and add some waypoints to qMatrix
+% ur3.model.animate(q1);
+% ur3.model.teach
 % qWaypoints = [q1 ...
 %     ; -pi/4,deg2rad([-111,-72]) ...
 %     ; deg2rad([169,-111,-72]) ...
 %     ; q2];
 % qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-% if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
+% if IsCollision(ur3,qMatrix,faces,vertex,faceNormals)
 %     error('Collision detected!!');
 % else
 %     display('No collision found');
 % end
-% robot.animate(qMatrix);
-% 
-% % 3.2: Manually create cartesian waypoints
-% robot.animate(q1);
-% qWaypoints = [q1 ; robot.ikcon(transl(1.5,-1,0),q1)];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1,-1,0),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,-0.5,0),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0,0),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0.5,0),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,1,0),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; robot.ikcon(transl(1.5,1,0),q2)];
+% ur3.model.animate(qMatrix);
+
+% 3.2: Manually create cartesian waypoints
+% ur3.model.animate(q1);
+% qWaypoints = [q1 ; ur3.model.ikcon(transl(0,-0.5,0.5),q1)];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.1,-0.5,0.5),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.2,-0.5,0.5),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.3,-0.5,0.5),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.4,-0.5,0.5),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.5,-0.5,0.5),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.6,-0.5,0.5),q2)];
 % qWaypoints = [qWaypoints; q2];
 % qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-% if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
+% if IsCollision(ur3,qMatrix,faces,vertex,faceNormals)
 %     error('Collision detected!!');
 % else
 %     display('No collision found');
 % end
-% robot.animate(qMatrix);        
-% 
-% % 3.3: Randomly select waypoints (primative RRT)
-% robot.animate(q1);
-% qWaypoints = [q1;q2];
-% isCollision = true;
-% checkedTillWaypoint = 1;
-% qMatrix = [];
-% while (isCollision)
-%     startWaypoint = checkedTillWaypoint;
-%     for i = startWaypoint:size(qWaypoints,1)-1
-%         qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
-%         if ~IsCollision(robot,qMatrixJoin,faces,vertex,faceNormals)
-%             qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
-%             robot.animate(qMatrixJoin);
-%             size(qMatrix)
-%             isCollision = false;
-%             checkedTillWaypoint = i+1;
-%             % Now try and join to the final goal (q2)
-%             qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
-%             if ~IsCollision(robot,qMatrixJoin,faces,vertex,faceNormals)
-%                 qMatrix = [qMatrix;qMatrixJoin];
-%                 % Reached goal without collision, so break out
-%                 break;
-%             end
-%         else
-%             % Randomly pick a pose that is not in collision
-%             qRand = (2 * rand(1,3) - 1) * pi;
-%             while IsCollision(robot,qRand,faces,vertex,faceNormals)
-%                 qRand = (2 * rand(1,3) - 1) * pi;
-%             end
-%             qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
-%             isCollision = true;
-%             break;
-%         end
-%     end
-% end
-% robot.animate(qMatrix)
+% ur3.model.animate(qMatrix);        
+
+% 3.3: Randomly select waypoints (primative RRT)
+ur3.model.animate(q1);
+    drawnow() %%%%%%%%%%%%%%%added this
+qWaypoints = [q1;q2];
+isCollision = true;
+checkedTillWaypoint = 1;
+qMatrix = [];
+while (isCollision)
+    startWaypoint = checkedTillWaypoint;
+    for i = startWaypoint:size(qWaypoints,1)-1
+        qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
+        if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+            qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
+            ur3.model.animate(qMatrixJoin);
+                drawnow() %%%%%%%%%%%%%%%added this
+            size(qMatrix)
+            isCollision = false;
+            checkedTillWaypoint = i+1;
+            % Now try and join to the final goal (q2)
+            qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
+            if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+                qMatrix = [qMatrix;qMatrixJoin];
+                % Reached goal without collision, so break out
+                break;
+            end
+        else
+            % Randomly pick a pose that is not in collision
+            qRand = (2 * rand(1,3) - 1) * pi;
+            while IsCollision(ur3,qRand,faces,vertex,faceNormals)
+                qRand = (2 * rand(1,3) - 1) * pi;
+            end
+            qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
+            isCollision = true;
+            break;
+        end
+    end
+end
+ur3.model.animate(qMatrix)
+    drawnow()%%%%%%%%%%%%%added this
 % keyboard
 
 end
@@ -207,7 +213,8 @@ for qIndex = 1:size(qMatrix,1)
     %tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
 
         % can use either line 
-          [~, tr] = ur3.model.fkine(ur3.model.getpos);
+      [~, tr] = ur3.model.fkine(ur3.model.getpos);
+          %error "q must have 7 columns error"
      %[~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
 
     % Go through each link and also each triangle face

@@ -16,7 +16,7 @@ workspace = [-2 2 -2 2 -0.05 2];                                       % Set the
 robot.plot(q,'workspace',workspace,'scale',scale);                  % Plot the robot
         
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-centerpnt = [2,0,-0.5];
+centerpnt = [2.5,0,-0.5];
 side = 1.5;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -73,37 +73,37 @@ end
 
 %% Question 3
 % 3.1: Manually move robot with teach and add some waypoints to qMatrix
-robot.animate(q1);
-robot.teach
-qWaypoints = [q1 ...
-    ; -pi/4,deg2rad([-111,-72]) ...
-    ; deg2rad([169,-111,-72]) ...
-    ; q2];
-qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
-    error('Collision detected!!');
-else
-    display('No collision found');
-end
-robot.animate(qMatrix);
+% robot.animate(q1);
+% robot.teach
+% qWaypoints = [q1 ...
+%     ; -pi/4,deg2rad([-111,-72]) ...
+%     ; deg2rad([169,-111,-72]) ...
+%     ; q2];
+% qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
+% if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
+%     error('Collision detected!!');
+% else
+%     display('No collision found');
+% end
+% robot.animate(qMatrix);
 
 % 3.2: Manually create cartesian waypoints
-robot.animate(q1);
-qWaypoints = [q1 ; robot.ikcon(transl(1.5,-1,0),q1)];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1,-1,0),qWaypoints(end,:))];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,-0.5,0),qWaypoints(end,:))];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0,0),qWaypoints(end,:))];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0.5,0),qWaypoints(end,:))];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,1,0),qWaypoints(end,:))];
-qWaypoints = [qWaypoints; robot.ikcon(transl(1.5,1,0),q2)];
-qWaypoints = [qWaypoints; q2];
-qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
-    error('Collision detected!!');
-else
-    display('No collision found');
-end
-robot.animate(qMatrix);        
+% robot.animate(q1);
+% qWaypoints = [q1 ; robot.ikcon(transl(1.5,-1,0),q1)];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1,-1,0),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,-0.5,0),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0,0),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,0.5,0),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1.1,1,0),qWaypoints(end,:))];
+% qWaypoints = [qWaypoints; robot.ikcon(transl(1.5,1,0),q2)];
+% qWaypoints = [qWaypoints; q2];
+% qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
+% if IsCollision(robot,qMatrix,faces,vertex,faceNormals)
+%     error('Collision detected!!');
+% else
+%     display('No collision found');
+% end
+% robot.animate(qMatrix);        
 
 % 3.3: Randomly select waypoints (primative RRT)
 robot.animate(q1);
