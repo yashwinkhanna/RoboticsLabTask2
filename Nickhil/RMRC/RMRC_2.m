@@ -1,4 +1,4 @@
-classdef RMRC < handle
+classdef RMRC_2 < handle
     properties
         %> Robot model
 %         model;
@@ -14,7 +14,7 @@ classdef RMRC < handle
     
     methods
         %% structor
-        function self = RMRC()
+        function self = RMRC_2()
             self.t = 10;             % Total time (s) default
             self.deltaT = 0.02;      % Control frequency default
             self.steps = self.t/self.deltaT;   % No. of steps for simulation
@@ -54,7 +54,7 @@ classdef RMRC < handle
 
             if axis == 'x'
                 for i=1:self.steps
-                    x(1,i) = ((1-s(i))*loc_x) + (s(i)*(loc_x+displacement)) % Points in x
+                    x(1,i) = ((1-s(i))*loc_x) + (s(i)*(loc_x+displacement)); % Points in x
                     x(2,i) = loc_y; %(1-s(i))*loc_y + s(i)*loc_y; % Points in y
                     x(3,i) = loc_z; %(1-s(i)); % + s(i); % Points in z
 
@@ -77,7 +77,7 @@ classdef RMRC < handle
             if axis == 'z'
                 for i=1:self.steps
                     x(1,i) = loc_x; % Points in x
-                    x(2,i) = loc_y; % Points in y
+                    x(2,i) = loc_z; % Points in y
                     x(3,i) = ((1-s(i))*loc_z) + (s(i)*(loc_z+displacement)); %(1-s(i)); % + s(i); % Points in z
 
                     theta(1,i) = loc_r; %0;                 % Roll angle 
@@ -85,8 +85,6 @@ classdef RMRC < handle
                     theta(3,i) = loc_yw; %0;                 % Yaw angle
                 end
             end
-            
-            stg1 = 's(i) calced'
 
             T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1];          % Create transformation of first point and angle
             q0 = zeros(1,7);                                                            % Initial guess for joint angles
@@ -124,8 +122,6 @@ classdef RMRC < handle
                 positionError(:,i) = x(:,i+1) - T(1:3,4);                               % For plotting
                 angleError(:,i) = deltaTheta;                                           % For plotting
             end
-            matrix = qMatrix;
-            stg2 = 'rmrc class'
 
             for i = 1:self.steps
               pause(0.01);    

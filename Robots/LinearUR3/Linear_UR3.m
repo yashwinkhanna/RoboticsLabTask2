@@ -42,12 +42,12 @@ function GetUR3Robot(self)
 
     % Incorporate joint limits
     L(1).qlim = [-0.8 0];
-    L(2).qlim = [-360 360]*pi/180;
-    L(3).qlim = [-90 90]*pi/180;
-    L(4).qlim = [-170 170]*pi/180;
-    L(5).qlim = [-360 360]*pi/180;
-    L(6).qlim = [-360 360]*pi/180;
-    L(7).qlim = [-360 360]*pi/180;
+%     L(2).qlim = [-360 360]*pi/180;
+%     L(3).qlim = [-90 90]*pi/180;
+%     L(4).qlim = [-170 170]*pi/180;
+%     L(5).qlim = [-360 360]*pi/180;
+%     L(6).qlim = [-360 360]*pi/180;
+%     L(7).qlim = [-360 360]*pi/180;
 
     L(3).offset = -pi/2;
     L(5).offset = -pi/2;

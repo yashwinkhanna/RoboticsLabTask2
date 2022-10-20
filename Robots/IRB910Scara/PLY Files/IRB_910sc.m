@@ -4,7 +4,7 @@ classdef IRB_910sc < handle
         model;
         
         %> workspace
-        workspace = [-0.6 0.6 -0.6 0.6 -0.67 1.1];   %[-0.6 0.6 -0.6 0.6 -0.2 1.1]
+        workspace = [-2 2 -2 2 -0.67 2]; %[-0.6 0.6 -0.6 0.6 -0.67 1.1];   %[-0.6 0.6 -0.6 0.6 -0.2 1.1]
       
     end
     
@@ -29,9 +29,9 @@ classdef IRB_910sc < handle
         function GetIRB_910scRobot(self)
             pause(0.001);
             name = ['IRB_910sc_',datestr(now,'yyyymmddTHHMMSSFFF')];
-            L1 = Link('d',0.1916,           'a',0.3,        'alpha',0,  'qlim',deg2rad([-360 360]), 'offset',0);
-            L2 = Link('d',0.2577-0.1916,    'a',0.25,       'alpha',0,  'qlim',deg2rad([-360 360]), 'offset',0);
-            L3 = Link('d',0.2577*2,         'a',0,          'alpha',0,  'qlim',deg2rad([-360 360]), 'offset', 0);
+            L1 = Link('d',0.1916,           'a',0.3,        'alpha',0,  'qlim',deg2rad([-140 140]), 'offset',0);
+            L2 = Link('d',0.2577-0.1916,    'a',0.25,       'alpha',0,  'qlim',deg2rad([-150 150]), 'offset',0);
+            L3 = Link('d',0.2577*2,         'a',0,          'alpha',0,  'qlim',deg2rad([-400 400]), 'offset', 0);
 %             L4 = Link('d',0.11235,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
 %             L5 = Link('d',0.08535,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
 %             L6 = Link('d',0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
@@ -40,7 +40,8 @@ classdef IRB_910sc < handle
 %             self.model = SerialLink(L,'name',name);
 
                 %this moves the robot base position 
-            self.model.base = self.model.base * transl(-1.25,0,0);
+%                 self.model.base = self.model.base * transl(0.5,0.5,0);
+                self.model.base = self.model.base * transl(-1.25,0,0) * trotz(-pi/2);
         end
 
         %% PlotAndColourRobot
