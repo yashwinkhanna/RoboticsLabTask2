@@ -292,6 +292,7 @@ cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 
 
 
+
 % 
 % resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);     %Move back to grill
 % 
