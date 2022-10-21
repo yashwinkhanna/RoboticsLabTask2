@@ -15,7 +15,7 @@ classdef RMRC < handle
     methods
         %% structor
         function self = RMRC()
-            self.t = 10;             % Total time (s) default
+%             self.t = 10;             % Total time (s) default
             self.deltaT = 0.02;      % Control frequency default
             self.steps = self.t/self.deltaT;   % No. of steps for simulation
 %             self.delta = 2*pi/steps; % Small angle change
@@ -30,8 +30,10 @@ classdef RMRC < handle
         % axis = axis to translate along: 'x' 'y' or 'z' (appostrophe included)
         % location = end effector current pose as homo 4x4 transform
         % displacement = desired travel distance
-        function axial(self, robot_in, axis, location, displacement)
+        function matrix = axial(self, robot_in, axis, location, displacement, time)
             robot = robot_in.model;
+            self.t = time;
+            self.steps = self.t/self.deltaT;   % No. of steps for simulation
             
             m = zeros(self.steps,1);             % Array for Measure of Manipulability
             qMatrix = zeros(self.steps,7);       % Array for joint anglesR
@@ -86,7 +88,7 @@ classdef RMRC < handle
                 end
             end
             
-            stg1 = 's(i) calced'
+%             stg1 = 's(i) calced'
 
             T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1];          % Create transformation of first point and angle
             q0 = zeros(1,7);                                                            % Initial guess for joint angles
@@ -125,13 +127,13 @@ classdef RMRC < handle
                 angleError(:,i) = deltaTheta;                                           % For plotting
             end
             matrix = qMatrix;
-            stg2 = 'rmrc class'
+%             stg2 = 'rmrc class'
 
-            for i = 1:self.steps
-              pause(0.01);    
-              robot.animate(qMatrix(i,:)); %Animate plots the arm movement
-              drawnow() %drawnow() displays the arm movement in figure 
-            end
+%             for i = 1:self.steps
+%               pause(0.01);    
+%               robot.animate(qMatrix(i,:)); %Animate plots the arm movement
+%               drawnow() %drawnow() displays the arm movement in figure 
+%             end
     
         end     %end linear function
         

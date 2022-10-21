@@ -1,7 +1,7 @@
 %% LAB TASK 2 - PANCAKE CHEF
 %  MASTER MAIN FILE
 %  Nickhil Naiker - 
-%  Stefano Mezzato - 
+%  Stefano Mazzotta - 
 %  Yashwin Khanna - 12919116
 
 % 19/10
@@ -38,14 +38,14 @@ hold on; % To retain current plot or graphic
                  % know where to map the image
 surf([-2,-2;3.25,3.25],[-2.5,2;-2.5,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
-surf([-2,-2;-2,-2],[-2.6,2;-2.6,2],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
+% surf([-2,-2;-2,-2],[-2.6,2;-2.6,2],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
 
-surf([-2,3.25;-2,3.25],[-2.6,-2.6;-2.6,-2.6],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
+% surf([-2,3.25;-2,3.25],[-2.6,-2.6;-2.6,-2.6],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
 
 %PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);    %Table
 
-cakepos_irb = [-1.25+0.4, 0, 0.075]; %[ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
-cakepos_ur3 = [-1.25+0.4, 0, 0.075]; %[ -0.1   ,0.5,    0.12];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
+cakepos_irb = [-1.25+0.4, 0.035, 0.075]; %[ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
+cakepos_ur3 = [-1.25+0.5, 0, 0.075]; %[ -0.1   ,0.5,    0.12];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
 
     %Table
 PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
@@ -75,6 +75,9 @@ steps = 50;
 % create_spatula.SpatulaSpawn(1,-0.7,0.5,0);    %fn in SpatulaClass to create and spawn spatula at an x,y,theta coordinate   
 
 resolve = RMRC(); %initialise RMRC class. Class performs traj and movement animations
+
+offset_y = 0.1;
+offset_z = 0.045;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 1) Move IRB to Grill Position
@@ -121,23 +124,28 @@ axis equal;
 
 anim_speed = 0.5;       %animation speed 
 pause(anim_speed); 
-    PlaceObject('pancake_50.ply', cakepos_irb);
+p50 = PlaceObject('pancake_50.ply', cakepos_irb);
 
 pause(anim_speed);
-    PlaceObject('pancake_75.ply', cakepos_irb); 
-    delete(PlaceObject('pancake_50.ply', cakepos_irb));     %deleting previous pancake
+delete(p50);
+p75 = PlaceObject('pancake_75.ply', cakepos_irb); 
+% delete(PlaceObject('pancake_50.ply', cakepos_irb));     %deleting previous pancake
+
 
 pause(anim_speed);
-    PlaceObject('pancake_100.ply', cakepos_irb);
-    delete(PlaceObject('pancake_75.ply', cakepos_irb));
+delete(p75)
+p100 = PlaceObject('pancake_100.ply', cakepos_irb);
+% delete(PlaceObject('pancake_75.ply', cakepos_irb));
 
 pause(anim_speed);
-    PlaceObject('pancake_125.ply', cakepos_irb);
-    delete(PlaceObject('pancake_100.ply', cakepos_irb));
+delete(p100);
+p125 = PlaceObject('pancake_125.ply', cakepos_irb);
+% delete(PlaceObject('pancake_100.ply', cakepos_irb));
 
 pause(anim_speed);
-    PlaceObject('pancake_150.ply', cakepos_irb);
-    delete(PlaceObject('pancake_125.ply', cakepos_irb));
+delete(p125);
+p150 = PlaceObject('pancake_150.ply', cakepos_irb);
+% delete(PlaceObject('pancake_125.ply', cakepos_irb));
 
  delete(blastPlot_h);       %stop dispensing projection line
 
@@ -181,7 +189,8 @@ q = zeros(1,7);
                     %coords, so arm does not go into floor. 
 %     q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
 % q1 = [-0.1000         0    0.7854    1.5708    0.7854    1.5708         0]
-q1 = [-0.8000         0    0.7854    1.5708    0.7854    1.5708         0];
+% q1 = [-0.7400         0    0.7854    1.5708    0.7854    1.5708         0];
+q1 = [-0.7400         0    0.5341    1.8221    0.7854    1.5708         0];
 
     %jtraj creates a path between one set of joint positions (q) and a second
     %set of joint positions (q1) using a certain amount of set increments (50)
@@ -212,30 +221,77 @@ pause(1);
 % premove = ur3.model.getpos
 % mat = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), 0.2);
 % postmove = ur3.model.getpos
-res2 = RMRC_2;
-res2.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), 0.2);
+% res2 = RMRC_2;
+% res2.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), 0.2);
 
-% for i = 1:500
-%   pause(0.02);    
-%   ur3.model.animate(mat(i,:)); %Animate plots the arm movement
-%   drawnow() %drawnow() displays the arm movement in figure 
-%   i
-% end
+rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.06, 1);
+cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
+delete(p150);
+
+for i = 1:resolve.steps
+  pause(0.01);    
+  ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
+  drawnow() %drawnow() displays the arm movement in figure 
+  
+  delete(cake_now);
+  EE_pos = ur3.model.fkine(ur3.model.getpos);
+%   spat_pos = [spat_Jangles(1,4) spat_Jangles(2,4)+0.05 spat_Jangles(3,4)]
+  spat_pos = cakepos_irb;
+  spat_pos(3) = EE_pos(3, 4)-0.05;
+  cake_now = PlaceObject('pancake_150.ply', spat_pos);
+  
+end
+
+
             
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% 7) Rotate UR3 to flip pancake
-% 
-% q0 = ur3.model.getpos
-% q1 = q0
-% EE_rot = pi;
-% q1(7) = q1(7)+EE_rot
-% path = jtraj(q0, q1, steps);
-% for i = 1:steps
-%     pause(0.01);
-%     ur3.model.animate(path(i,:));
-%     
-%     drawnow()
-% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 7) Rotate UR3 to flip pancake
+
+q0 = ur3.model.getpos;
+q1 = q0;
+EE_rot = pi;
+q1(7) = q1(7)+EE_rot;
+path = jtraj(q0, q1, steps);
+
+% cake.spawnLocation(1, spat_pos(1), spat_pos(2), spat_pos(3));
+% delete(cake_now);
+alpha = 180/steps;
+spat_face = spat_pos;
+spat_face(3) = spat_pos(3) + 0.05;
+
+for i = 1:steps
+    pause(0.01);
+    ur3.model.animate(path(i,:));
+    drawnow()
+    
+    
+    rotate(cake_now, [0 1 0], alpha, spat_face);
+    
+    
+%     delete(cake_now);
+%     EE_pos = ur3.model.fkine(ur3.model.getpos);
+%     spat_pos(1) = EE_pos(1,4);
+%     spat_pos(2) = EE_pos(2, 4)+offset_y; %0.1;
+%     spat_pos(3) = EE_pos(3, 4)+offset_z; %-0.05;
+%     cake_now = PlaceObject('pancake_150.ply', spat_pos);
+    
+%     cake.brick{1}.base = EE_pos;
+%     cake.brick{1}.base(2,4) = EE_pos(2, 4)+offset_y;
+%     cake.brick{1}.base(3,4) = EE_pos(3, 4)+offset_z;
+%     cake.brick{1}.base = ur3.model.fkine(path(i,:))*trotx(pi/2);
+%     cake.brick{1}.base(2,4) = cake.brick{1}.base(2,4) + offset_y;
+%     cake.brick{1}.base(3,4) = cake.brick{1}.base(3,4) + offset_z;
+%     cake.brick{1}.animate(0);
+end
+
+delete(cake_now);
+
+cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
+
+% rotate(cake_now, [1 0 0], pi/2, cakepos_irb)
+
+
+
 % 
 % resolve.axial(ur3, 'z', ur3.model.fkine(q1), -0.2);     %Move back to grill
 % 
