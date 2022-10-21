@@ -30,6 +30,7 @@ classdef RMRC < handle
         % axis = axis to translate along: 'x' 'y' or 'z' (appostrophe included)
         % location = end effector current pose as homo 4x4 transform
         % displacement = desired travel distance
+        % time = time default -> use 10 if unsure. minimum is 0.5
         function matrix = axial(self, robot_in, axis, location, displacement, time)
             robot = robot_in.model;
             self.t = time;
