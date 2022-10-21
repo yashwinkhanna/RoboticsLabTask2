@@ -54,7 +54,7 @@ hold on;
 PlaceObject('griddle.ply', [-0.55,-0.15,0]);     %Loading in kitchen environment
 hold on;
 
-enviro = 0;
+enviro = 1;
 if enviro == 1
     environmentRPC;
 end
@@ -82,6 +82,7 @@ offset_z = 0.045;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 1) Move IRB to Grill Position
 
+pause(5);
     
 q = zeros(1,3);         %Create a vector of initial joint angles, beginning at 0
 
@@ -111,7 +112,7 @@ blastStartTr = irb.model.fkine(q1);
 blastStartPnt = blastStartTr(1:3,4)';
 
 %Blast stream length in x,y,z axis
-blastEndTr = irb.model.fkine(q1) * transl(0,0,-0.75);
+blastEndTr = irb.model.fkine(q1) * transl(0,0,-0.70);
 blastEndPnt = blastEndTr(1:3,4)';
 
 %This projects a line out of the irb end effector 

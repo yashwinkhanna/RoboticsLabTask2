@@ -91,4 +91,4 @@ path = jtraj (q,q1,50);
     %let us determine the end-effector position if we know the joint angles 
 % pos = r.model.fkine(x)
 
-t2rpy 
+%t2rpy 
