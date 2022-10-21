@@ -59,7 +59,6 @@ if enviro == 1
     environmentRPC;
 end
 
-
 irb = IRB_910sc;                                        %Initialise the IRB and UR3 robot
 ur3 = Linear_UR3(false);
 
@@ -68,6 +67,10 @@ ur3 = Linear_UR3(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup 
+
+estop = GUItest;
+%button_val = estop.Button.Value;
+estop.ButtonValuePublic;
 
 steps = 50;
 
@@ -334,4 +337,3 @@ cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 % % q1 = bot.model.getpos;
 % % resolve.axial(ur3, 'x', ur3.model.fkine(q1), -0.1);
 % % 
-

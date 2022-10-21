@@ -14,14 +14,28 @@ close all;
 % scale = 0.5;
 % workspace = [-2 2 -2 2 -0.05 2];                                       % Set the size of the workspace when drawing the robot
 % robot.plot(q,'workspace',workspace,'scale',scale);                  % Plot the robot
-%    
+%   
+
+    %plate stack - to cover cube
+PlaceObject('plate.ply', [-0.4,0,0]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.4,0,0.02]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.4,0,0.04]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.4,0,0.06]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.4,0,0.08]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.4,0,0.1]);     %Loading in kitchen environment
+hold on;
 
 q = zeros(1,7);
 ur3 = Linear_UR3(false);
 
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-centerpnt = [-0.4,0,0.5];
-side = 0.3;
+centerpnt = [-0.4,0,0.1];
+side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
 axis equal
@@ -60,8 +74,8 @@ for i = 1 : size(tr,7)-1
 end
 
 % 2.6: Go through until there are no step sizes larger than 1 degree
-q1 = [   0,0,pi/4,0,0,0,0];
-q2 = [-0.8,0,pi/4,0,0,0,0];
+q1 = [   0,0,pi/4,85*pi/180,0,0,0];
+q2 = [-0.8,0,pi/4,85*pi/180,0,0,0];
 
     steps = 2;
 
@@ -73,12 +87,10 @@ qMatrix = jtraj(q1,q2,steps);
 % 2.7
 result = true(steps,1);
 for i = 1: steps
-    result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
-    ur3.model.animate(qMatrix(i,:));
-  
-    drawnow()
-
-    pause(0.1);
+        result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
+        ur3.model.animate(qMatrix(i,:));
+        drawnow()
+        pause(0.1);
 end
 
 
