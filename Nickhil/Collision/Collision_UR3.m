@@ -2,9 +2,9 @@
 % Lab 5 - Questions 2 and 3: 3-link plannar collision check and avoidance
 function [  ] = Collision_UR3( )
 
-% clf
+clf
 close all;
-
+set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
 % 2.1: Make a 3DOF model
 % L1 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi pi]);
 % L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi pi]);
@@ -17,24 +17,24 @@ close all;
 %   
 
     %plate stack - to cover cube
-PlaceObject('plate.ply', [-0.4,0,0]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0]);     %Loading in kitchen environment
 hold on;
-PlaceObject('plate.ply', [-0.4,0,0.02]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0.02]);     %Loading in kitchen environment
 hold on;
-PlaceObject('plate.ply', [-0.4,0,0.04]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0.04]);     %Loading in kitchen environment
 hold on;
-PlaceObject('plate.ply', [-0.4,0,0.06]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0.06]);     %Loading in kitchen environment
 hold on;
-PlaceObject('plate.ply', [-0.4,0,0.08]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0.08]);     %Loading in kitchen environment
 hold on;
-PlaceObject('plate.ply', [-0.4,0,0.1]);     %Loading in kitchen environment
+PlaceObject('plate.ply', [-0.75,0,0.1]);     %Loading in kitchen environment
 hold on;
 
 q = zeros(1,7);
 ur3 = Linear_UR3(false);
 
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-centerpnt = [-0.4,0,0.1];
+centerpnt = [-0.75,0,0.1];
 side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -51,7 +51,7 @@ camlight
     %             ; 0,1,0 ...
     %             ; 0,-1,0 ...
     %             ;1,0,0];
-ur3.model.teach;
+% ur3.model.teach;
 
 % 2.4: Get the transform of every joint (i.e. start and end of every link)
 tr = zeros(4,4,ur3.model.n+1);
@@ -60,22 +60,22 @@ L = ur3.model.links;
 for i = 1 : ur3.model.n
     tr(:,:,i+1) = tr(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
 end
-
-% 2.5: Go through each link and also each triangle face
-for i = 1 : size(tr,7)-1    
-    for faceIndex = 1:size(faces,1)
-        vertOnPlane = vertex(faces(faceIndex,1)',:);
-        [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
-        if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
-            plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
-            display('UR3 is at a collison');
-        end
-    end    
-end
-
+% 
+% % 2.5: Go through each link and also each triangle face
+% for i = 1 : size(tr,7)-1    
+%     for faceIndex = 1:size(faces,1)
+%         vertOnPlane = vertex(faces(faceIndex,1)',:);
+%         [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
+%         if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
+%             plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
+%             display('UR3 is at a collison');
+%         end
+%     end    
+% end
+% 
 % 2.6: Go through until there are no step sizes larger than 1 degree
 q1 = [   0,0,pi/4,85*pi/180,0,0,0];
-q2 = [-0.8,0,pi/4,85*pi/180,0,0,0];
+q2 = [-0.8,0,pi/4,85*pi/180,0,0,2*pi]; %% !!!!! change col 7 back to 0
 
     steps = 2;
 
@@ -87,10 +87,24 @@ qMatrix = jtraj(q1,q2,steps);
 % 2.7
 result = true(steps,1);
 for i = 1: steps
+%         offset_weighted = round(steps/45);
+%         offset = 25;
+%         result(i) = IsCollision(ur3,qMatrix(i+round(offset*(steps/(steps-i))),:),faces,vertex,faceNormals,false);
         result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
+        display(result(i));
+        if result(i) == 1
+%             for j = 1:ur3.model.n
+%                 qMatrix(:, j) = qMatrix(i, j);
+%             end
+            
+            qMatrix(:, 1) = qMatrix(i, 1); %overwrite all values in matrix with qmatrix value of current for loop index
+        end
         ur3.model.animate(qMatrix(i,:));
         drawnow()
-        pause(0.1);
+        pause(0.01);
+        if result(i) == 1
+            break
+        end
 end
 
 
@@ -225,9 +239,9 @@ for qIndex = 1:size(qMatrix,1)
     %tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
 
         % can use either line 
-      [~, tr] = ur3.model.fkine(ur3.model.getpos);
+%       [~, tr] = ur3.model.fkine(ur3.model.getpos);
           %error "q must have 7 columns error"
-     %[~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
+     [~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
 
     % Go through each link and also each triangle face
     for i = 1 : size(tr,3)-1    
@@ -235,7 +249,8 @@ for qIndex = 1:size(qMatrix,1)
             vertOnPlane = vertex(faces(faceIndex,1)',:);
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
-                plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
+                plot3(intersectP(1),intersectP(2),intersectP(3),'b*');
+%                 q1 = 
                 display('UR3 is at a collison');
                 result = true;
                 if returnOnceFound
