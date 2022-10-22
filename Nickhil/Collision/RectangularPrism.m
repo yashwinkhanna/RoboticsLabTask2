@@ -68,7 +68,7 @@ end
 %% If you want to plot the edges
 if isfield(plotOptions,'plotFaces') && plotOptions.plotFaces
         %to show blue cube do tcolor = [.2 .2 .8]
-    tcolor = [];
+    tcolor = [.2 .2 .8];
     
     patch('Faces',face,'Vertices',vertex,'FaceVertexCData',tcolor,'FaceColor','flat','lineStyle','none');
 end

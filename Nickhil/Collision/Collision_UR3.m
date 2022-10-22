@@ -30,11 +30,25 @@ hold on;
 PlaceObject('plate.ply', [-0.75,0,0.1]);     %Loading in kitchen environment
 hold on;
 
+% PlaceObject('plate.ply', [-0.75,-0.5,0.04]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,-0.5,0.06]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,-0.5,0.08]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,-0.5,0.10]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,-0.5,0.12]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,-0.5,0.14]);     %Loading in kitchen environment
+% hold on;
+
 q = zeros(1,7);
-ur3 = Linear_UR3(false);
+ur3 = Col_Linear_UR3(false);
 
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
 centerpnt = [-0.75,0,0.1];
+%centerpnt = [-0.75,-0.5,0.2];
 side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -51,7 +65,7 @@ camlight
     %             ; 0,1,0 ...
     %             ; 0,-1,0 ...
     %             ;1,0,0];
-% ur3.model.teach;
+ %ur3.model.teach;
 
 % 2.4: Get the transform of every joint (i.e. start and end of every link)
 tr = zeros(4,4,ur3.model.n+1);
@@ -72,10 +86,13 @@ end
 %         end
 %     end    
 % end
-% 
+ 
 % 2.6: Go through until there are no step sizes larger than 1 degree
 q1 = [   0,0,pi/4,85*pi/180,0,0,0];
 q2 = [-0.8,0,pi/4,85*pi/180,0,0,2*pi]; %% !!!!! change col 7 back to 0
+
+% q1 = [   0,0,0,0,0,0,0];
+% q2 = [-0.8,0,0,0,0,0,2*pi]; %% !!!!! change col 7 back to 0
 
     steps = 2;
 
@@ -98,6 +115,15 @@ for i = 1: steps
 %             end
             
             qMatrix(:, 1) = qMatrix(i, 1); %overwrite all values in matrix with qmatrix value of current for loop index
+                
+                %will adding these account for all joints?
+            qMatrix(:, 2) = qMatrix(i, 2); %overwrite all values in matrix with qmatrix value of current for loop index
+            qMatrix(:, 3) = qMatrix(i, 3); %overwrite all values in matrix with qmatrix value of current for loop index
+            qMatrix(:, 4) = qMatrix(i, 4); %overwrite all values in matrix with qmatrix value of current for loop index
+            qMatrix(:, 5) = qMatrix(i, 5); %overwrite all values in matrix with qmatrix value of current for loop index
+            qMatrix(:, 6) = qMatrix(i, 6); %overwrite all values in matrix with qmatrix value of current for loop index
+            qMatrix(:, 7) = qMatrix(i, 7); %overwrite all values in matrix with qmatrix value of current for loop index
+
         end
         ur3.model.animate(qMatrix(i,:));
         drawnow()
@@ -143,45 +169,45 @@ end
 % ur3.model.animate(qMatrix);        
 
 % 3.3: Randomly select waypoints (primative RRT)
-ur3.model.animate(q1);
-    drawnow() %%%%%%%%%%%%%%%added this
-qWaypoints = [q1;q2];
-isCollision = true;
-checkedTillWaypoint = 1;
-qMatrix = [];
-while (isCollision)
-    startWaypoint = checkedTillWaypoint;
-    for i = startWaypoint:size(qWaypoints,1)-1
-        qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
-        if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
-            qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
-            ur3.model.animate(qMatrixJoin);
-                drawnow() %%%%%%%%%%%%%%%added this
-            size(qMatrix)
-            isCollision = false;
-            checkedTillWaypoint = i+1;
-            % Now try and join to the final goal (q2)
-            qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
-            if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
-                qMatrix = [qMatrix;qMatrixJoin];
-                % Reached goal without collision, so break out
-                break;
-            end
-        else
-            % Randomly pick a pose that is not in collision
-            qRand = (2 * rand(1,3) - 1) * pi;
-            while IsCollision(ur3,qRand,faces,vertex,faceNormals)
-                qRand = (2 * rand(1,3) - 1) * pi;
-            end
-            qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
-            isCollision = true;
-            break;
-        end
-    end
-end
-ur3.model.animate(qMatrix)
-    drawnow()%%%%%%%%%%%%%added this
-% keyboard
+% ur3.model.animate(q1);
+%     drawnow() %%%%%%%%%%%%%%%added this
+% qWaypoints = [q1;q2];
+% isCollision = true;
+% checkedTillWaypoint = 1;
+% qMatrix = [];
+% while (isCollision)
+%     startWaypoint = checkedTillWaypoint;
+%     for i = startWaypoint:size(qWaypoints,1)-1
+%         qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
+%         if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+%             qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
+%             ur3.model.animate(qMatrixJoin);
+%                 drawnow() %%%%%%%%%%%%%%%added this
+%             size(qMatrix)
+%             isCollision = false;
+%             checkedTillWaypoint = i+1;
+%             % Now try and join to the final goal (q2)
+%             qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
+%             if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+%                 qMatrix = [qMatrix;qMatrixJoin];
+%                 % Reached goal without collision, so break out
+%                 break;
+%             end
+%         else
+%             % Randomly pick a pose that is not in collision
+%             qRand = (2 * rand(1,3) - 1) * pi;
+%             while IsCollision(ur3,qRand,faces,vertex,faceNormals)
+%                 qRand = (2 * rand(1,3) - 1) * pi;
+%             end
+%             qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
+%             isCollision = true;
+%             break;
+%         end
+%     end
+% end
+% ur3.model.animate(qMatrix)
+%     drawnow()%%%%%%%%%%%%%added this
+% % keyboard
 
 end
 
