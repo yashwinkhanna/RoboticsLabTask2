@@ -28,6 +28,7 @@
 clf
 clear all    
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
+estop = GUItest;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create robots and environment           
@@ -54,7 +55,7 @@ hold on;
 PlaceObject('griddle.ply', [-0.55,-0.15,0]);     %Loading in kitchen environment
 hold on;
 
-enviro = 1;
+enviro = 0;
 if enviro == 1
     environmentRPC;
 end
@@ -68,9 +69,9 @@ ur3 = Linear_UR3(false);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup 
 
-estop = GUItest;
+
 %button_val = estop.Button.Value;
-estop.ButtonValuePublic;
+% buttontest = estop.ButtonValuePublic;
 
 steps = 50;
 
@@ -105,6 +106,7 @@ path = jtraj (q,q1,50);
          pause(0.01);
          irb.model.animate(path(i,:));     %Animate plots the arm movement. i,: is current ith row and all columns
          drawnow()         %drawnow() displays the arm movement in figure
+         isEStop;
      end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,25 +135,20 @@ p50 = PlaceObject('pancake_50.ply', cakepos_irb);
 pause(anim_speed);
 delete(p50);
 p75 = PlaceObject('pancake_75.ply', cakepos_irb); 
-% delete(PlaceObject('pancake_50.ply', cakepos_irb));     %deleting previous pancake
-
 
 pause(anim_speed);
 delete(p75)
 p100 = PlaceObject('pancake_100.ply', cakepos_irb);
-% delete(PlaceObject('pancake_75.ply', cakepos_irb));
 
 pause(anim_speed);
 delete(p100);
 p125 = PlaceObject('pancake_125.ply', cakepos_irb);
-% delete(PlaceObject('pancake_100.ply', cakepos_irb));
 
 pause(anim_speed);
 delete(p125);
 p150 = PlaceObject('pancake_150.ply', cakepos_irb);
-% delete(PlaceObject('pancake_125.ply', cakepos_irb));
 
- delete(blastPlot_h);       %stop dispensing projection line
+delete(blastPlot_h);       %stop dispensing projection line
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4) Move IRB back to home pose
@@ -174,10 +171,12 @@ path = jtraj (q1,qh,50);
 
         %Animate actually makes the arm move 
         %i,: is just the saying the current ith row and all columns
-      irb.model.animate(path(i,:));
+        irb.model.animate(path(i,:));
       
         %drawnow() displays the arm movement 
-      drawnow()
+        drawnow()
+        
+        isEStop;
      end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -217,17 +216,14 @@ path = jtraj (q,q1,50);
 
         %drawnow() displays the arm movement 
       drawnow()
+      
+      isEStop;
      end
+         
      
 pause(1);
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 6) Move UR3 up to lift pancake 
-% premove = ur3.model.getpos
-% mat = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), 0.2);
-% postmove = ur3.model.getpos
-% res2 = RMRC_2;
-% res2.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), 0.2);
-
 rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.06, 1);
 cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 delete(p150);
@@ -244,6 +240,7 @@ for i = 1:resolve.steps
   spat_pos(3) = EE_pos(3, 4)-0.05;
   cake_now = PlaceObject('pancake_150.ply', spat_pos);
   
+  isEStop;
 end
 
 
@@ -270,6 +267,8 @@ for i = 1:steps
     
     
     rotate(cake_now, [0 1 0], alpha, spat_face);
+    
+    isEStop;
     
     
 %     delete(cake_now);
@@ -337,3 +336,4 @@ cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 % % q1 = bot.model.getpos;
 % % resolve.axial(ur3, 'x', ur3.model.fkine(q1), -0.1);
 % % 
+

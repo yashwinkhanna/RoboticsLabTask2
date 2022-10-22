@@ -38,7 +38,7 @@ function GetUR3Robot(self)
     L(4) = Link('d',0,'a',-0.21325,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);
     L(5) = Link('d',0.11235,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
     L(6) = Link('d',0.08535,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
-    L(7) = Link('d',0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
+    L(7) = Link('d',0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0); %('d',0.185+0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
 
     % Incorporate joint limits
     L(1).qlim = [-0.8 0];
