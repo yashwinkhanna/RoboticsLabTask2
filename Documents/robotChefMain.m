@@ -41,7 +41,7 @@ surf([-2,-2;3.25,3.25],[-2.5,2;-2.5,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread(
 
 %PlaceObject('roboticstable.ply', [-0.25,0.5,-0.07]);    %Table
 
-cakepos_irb = [-1.25+0.4, 0.035, 0.075]; %[ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
+cakepos_irb = [-1.25+0.4, 0.035, 0.16]; %[ 0.1 ,0.49, 0.01];                       %Pancake dispense position for IRB 910
 cakepos_ur3 = [-1.25+0.5, 0, 0.075]; %[ -0.1   ,0.5,    0.12];    %[ 0.1 ,0.4, 0]        %Pancake pick up pos for LinUR3
 
     %Table
