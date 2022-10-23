@@ -57,7 +57,7 @@ classdef RMRC < handle
 
             if axis == 'x'
                 for i=1:self.steps
-                    x(1,i) = ((1-s(i))*loc_x) + (s(i)*(loc_x+displacement)) % Points in x
+                    x(1,i) = ((1-s(i))*loc_x) + (s(i)*(loc_x+displacement)); % Points in x
                     x(2,i) = loc_y; %(1-s(i))*loc_y + s(i)*loc_y; % Points in y
                     x(3,i) = loc_z; %(1-s(i)); % + s(i); % Points in z
 
