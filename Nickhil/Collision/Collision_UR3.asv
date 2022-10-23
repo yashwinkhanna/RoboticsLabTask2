@@ -6,68 +6,43 @@ clf
 close all;
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ENVIRONMENT 
 
-    %plate stack - to cover cube
-% PlaceObject('plate.ply', [-0.75,0,0]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,0,0.02]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,0,0.04]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,0,0.06]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,0,0.08]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,0,0.1]);     %Loading in kitchen environment
-% hold on;
-plate_coords = [-0.75,-0.5,0.04];
+    %Plate stack coordinates
+plate_coords = [0,0,0]; 
 
-PlaceObject('plate.ply', [plate_coords(1,2),-0.5,0.04]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,-0.5,0.06]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,-0.5,0.08]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,-0.5,0.10]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,-0.5,0.12]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,-0.5,0.14]);     %Loading in kitchen environment
-hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.00]); hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.02]); hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.04]); hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.06]); hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.08]); hold on;
+    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.10]); hold on;
 
-q = zeros(1,7);
-ur3 = Col_Linear_UR3(false);
-
-% 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-%centerpnt = [-0.75,0,0.1];
-centerpnt = [-0.75,-0.5,0.2];
+    %Rectangular prism coords and side length
+centerpnt = [plate_coords(1),plate_coords(2),plate_coords(3)+0.07];
 side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
 axis equal
-camlight
+  camlight
 
-%2.3: Use teach and note when the links of the robot can collide with 4 of
-%the planes 
- ur3.model.teach;
+      %Create Col_Linear_UR3
+q = zeros(1,7);
+ur3 = Col_Linear_UR3(false);
 
-% 2.4: Get the transform of every joint (i.e. start and end of every link)
-tr = zeros(4,4,ur3.model.n+1);
-tr(:,:,1) = ur3.model.base;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %Get the transform of every joint (i.e. start and end of every link)
+tr =zeros(4,4,ur3.model.n+1);
+tr (:,:, 1) = ur3.model.base;
 L = ur3.model.links;
 for i = 1 : ur3.model.n
     tr(:,:,i+1) = tr(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
 end
  
-% 2.6: Go through until there are no step sizes larger than 1 degree
-% q1 = [   0,0,pi/4,85*pi/180,0,0,0];
-% q2 = [-0.8,0,pi/4,85*pi/180,0,0,2*pi]; %% !!!!! change col 7 back to 0
-
-%q2 = ur3.model.ikcon(transl(-0.75, 0, 0)*trotx(pi),q1); 
-
-q1 = [   0,0,0,0,0,0,0];
-q2 = [-0.8,0,0,0,0,0,2*pi]; %% !!!!! change col 7 back to 0
-
+ %Go through q1 to q2 until there are no step sizes > than 1 degree
     steps = 2;
 
 while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
