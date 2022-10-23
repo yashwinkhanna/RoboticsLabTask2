@@ -26,6 +26,7 @@ clear all
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
 estop = GUItest;
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create robots and environment           
 hold on; % To retain current plot or graphic

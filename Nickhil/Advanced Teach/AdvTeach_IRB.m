@@ -9,8 +9,7 @@ pendant = VirtualTeachPendant;
 robot = IRB_910sc;                   % Create copy called 'robot'
 %robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
 
-%robot.model.teach;
-
+teach
 %% Start "real-time" simulation
 q = zeros(1,3);                 % Set initial robot configuration 'q'
 
