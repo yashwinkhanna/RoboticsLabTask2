@@ -32,7 +32,6 @@ while( toc < duration)
     %[axes, buttons, povs] = read(joy);
           axes = pendant.read;
  
-          robot.model.teach;
     % -------------------------------------------------------------
     % YOUR CODE GOES HERE
     % 1 - turn joystick input into an end-effector velocity command
