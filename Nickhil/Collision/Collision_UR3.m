@@ -1,5 +1,4 @@
-%% Robotics
-% Lab 5 - Questions 2 and 3: 3-link plannar collision check and avoidance
+
 function [  ] = Collision_UR3( )
 
 clf
@@ -9,8 +8,20 @@ set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% ENVIRONMENT 
 
-    %Plate coords - ONLY NEED TO CHANGE THIS
-plate_stack = [-0.6,0.1,0]; 
+    %For collision detection the robot moves to the plate stack
+        %cooordinates 
+    %For collsion avoidance the robot moves to a point -0.4 away
+        %in the x-axis, from the stack of plates 
+
+    %%%%%%%%%%%%%%%%%%%%%%%
+
+    %Plate coords
+ plate_stack = [-0.5,-0.1,0]; 
+
+    %0 = Detection mode, 1 = Avoidance 
+ col_mode = 1;
+
+    %%%%%%%%%%%%%%%%%%%%%%%
 
     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.00]); hold on;
     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.02]); hold on;
@@ -26,20 +37,22 @@ plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
 axis equal
   camlight
-
+  
       %Create Col_Linear_UR3
 q = zeros(1,7);
 ur3 = Col_Linear_UR3(false);
 
-     %UR3 Start and end point 
- q1 = [   0,0,0,85*pi/180,0,0,0];
- q2 = ur3.model.ikcon(transl(plate_stack)*trotx(pi),q1); 
-%q2 = [-0.8,0,0,0,0,0,2*pi]; 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% PROCESS
+    %% DETECTION MODE
 
-    %Get the transform of every joint (i.e. start and end of every link)
+if col_mode == 0
+    disp('Collsion Detection Mode')
+       
+        %Start and end points 
+    q1 = [0,0,0, 85*pi/180, 0, 0, 0];
+    q2 = ur3.model.ikcon(transl(plate_stack)*trotx(pi),q1);
+
+     %Get the transform of every joint (start and end of every link)
 tr =zeros(4,4,ur3.model.n+1);
 tr (:,:, 1) = ur3.model.base;
 L = ur3.model.links;
@@ -55,106 +68,114 @@ while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
 end
 qMatrix = jtraj(q1,q2,steps);
 
-% 2.7
 result = true(steps,1);
+    %Iterate through all generated steps
 for i = 1: steps
-%         offset_weighted = round(steps/45);
-%         offset = 25;
-%         result(i) = IsCollision(ur3,qMatrix(i+round(offset*(steps/(steps-i))),:),faces,vertex,faceNormals,false);
-        result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
-        display(result(i));
-        if result(i) == 1
-            for j = 1:ur3.model.n %iterating through 1-7 links 
-                qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current for loop index
-            end
-            
-            %qMatrix(:, 1) = qMatrix(i, 1); %overwrite all values in matrix with qmatrix value of current for loop index            
-        end
-        ur3.model.animate(qMatrix(i,:));
+      result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
+      display(result(i));
+        %If there is a collision detected
+      if result(i) == 1
+          for j = 1:ur3.model.n %iterating through 1-7 links 
+              qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current for loop index
+          end
+      end
+      ur3.model.animate(qMatrix(i,:));
         drawnow()
-        pause(0.01);
-        if result(i) == 1
+      pause(0.01);
+        %If there is a collision break loop
+      if result(i) == 1
             break
-        end
+      end
 end
 
+end
 
-%% Question 3
-% 3.1: Manually move robot with teach and add some waypoints to qMatrix
-% ur3.model.animate(q1);
-% ur3.model.teach
-% qWaypoints = [q1 ...
-%     ; -pi/4,deg2rad([-111,-72]) ...
-%     ; deg2rad([169,-111,-72]) ...
-%     ; q2];
-% qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-% if IsCollision(ur3,qMatrix,faces,vertex,faceNormals)
-%     error('Collision detected!!');
-% else
-%     display('No collision found');
-% end
-% ur3.model.animate(qMatrix);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% AVOIDANCE MODE
+       
+if col_mode == 1
+ q1 = [0,0,pi/4,85*pi/180,pi/4,pi/2,0];
+    %-0.4 = 0.4 passed plates in x-axis
+ q2 = ur3.model.ikcon(transl(plate_stack(1)-0.4,plate_stack(2),plate_stack(3))* trotx(pi),q1); 
+    disp('Collsion Avoidance Mode')    
 
-% 3.2: Manually create cartesian waypoints
-% ur3.model.animate(q1);
-% qWaypoints = [q1 ; ur3.model.ikcon(transl(0,-0.5,0.5),q1)];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.1,-0.5,0.5),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.2,-0.5,0.5),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.3,-0.5,0.5),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.4,-0.5,0.5),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.5,-0.5,0.5),qWaypoints(end,:))];
-% qWaypoints = [qWaypoints; ur3.model.ikcon(transl(-0.6,-0.5,0.5),q2)];
-% qWaypoints = [qWaypoints; q2];
-% qMatrix = InterpolateWaypointRadians(qWaypoints,deg2rad(5));
-% if IsCollision(ur3,qMatrix,faces,vertex,faceNormals)
-%     error('Collision detected!!');
-% else
-%     display('No collision found');
-% end
-% ur3.model.animate(qMatrix);        
+ur3.model.animate(q1);
+    drawnow() %%%%%%%%%%%%%%%added this
+qWaypoints = [q1;q2];
+isCollision = true;
+checkedTillWaypoint = 1;
+qMatrix = [];
+while (isCollision)
+    startWaypoint = checkedTillWaypoint;
+        %Keep iterating for the amount of waypoints there are between q1,
+        %q2
+    for i = startWaypoint:size(qWaypoints,1)-1
+            %Make waypoint between one point to another inbetween q1, q2
+        qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
 
-% 3.3: Randomly select waypoints (primative RRT)
-% ur3.model.animate(q1);
-%     drawnow() %%%%%%%%%%%%%%%added this
-% qWaypoints = [q1;q2];
-% isCollision = true;
-% checkedTillWaypoint = 1;
-% qMatrix = [];
-% while (isCollision)
-%     startWaypoint = checkedTillWaypoint;
-%     for i = startWaypoint:size(qWaypoints,1)-1
-%         qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
-%         if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
-%             qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
+            %If a path between the waypoints can be made without collision
+        if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+            qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
+
 %             ur3.model.animate(qMatrixJoin);
 %                 drawnow() %%%%%%%%%%%%%%%added this
-%             size(qMatrix)
-%             isCollision = false;
-%             checkedTillWaypoint = i+1;
-%             % Now try and join to the final goal (q2)
-%             qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
-%             if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
-%                 qMatrix = [qMatrix;qMatrixJoin];
-%                 % Reached goal without collision, so break out
-%                 break;
-%             end
-%         else
-%             % Randomly pick a pose that is not in collision
-%             qRand = (2 * rand(1,3) - 1) * pi;
-%             while IsCollision(ur3,qRand,faces,vertex,faceNormals)
-%                 qRand = (2 * rand(1,3) - 1) * pi;
-%             end
-%             qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
-%             isCollision = true;
-%             break;
-%         end
-%     end
-% end
-% ur3.model.animate(qMatrix)
-%     drawnow()%%%%%%%%%%%%%added this
-% % keyboard
+            %size(qMatrix)
+
+            isCollision = false;
+            checkedTillWaypoint = i+1;
+                %Now try make waypoint between the start and end point
+            qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
+              
+                %If this possible, animate it and break loop 
+            if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+                qMatrix = [qMatrix;qMatrixJoin];
+                
+                %Animate 
+            for j=1:size(qMatrix,1)
+                pause(0.05);
+                ur3.model.animate(qMatrix(j,:));
+                drawnow()
+            end
+                % Reached goal without collision, so break out
+                break;
+            end
+            %Else there is a collision between waypoints, find another path 
+        else
+            % Randomly pick a new pose that is not in collision
+            qRand = (2 * rand(1,7) - 1) * pi;
+
+                %setting limits for link 1 (rail) rand generator so it does
+                %not give it a value outside the rail length 
+            lk1min = -0.8;
+            lk1max = 0;
+            lk1 = lk1min+rand(1,1)*(lk1max-lk1min);
+            qRand(1) = lk1;
+
+            while IsCollision(ur3,qRand,faces,vertex,faceNormals)
+                qRand = (2 * rand(1,7) - 1) * pi;
+
+                 %setting limits for link 1 (rail) rand generator
+            lk1min = -0.8;
+            lk1max = 0;
+            lk1 = lk1min+rand(1,1)*(lk1max-lk1min);
+            qRand(1) = lk1;
+
+            end
+            qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
+            isCollision = true;
+            break;
+        end
+    end
+end
+%ur3.model.animate(qMatrix)
+    %drawnow()%%%%%%%%%%%%%added this
+% keyboard
 
 end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % FUNCTIONS USED
 
 %% IsIntersectionPointInsideTriangle
 % Given a point which is known to be on the same plane as the triangle
@@ -210,7 +231,7 @@ for qIndex = 1:size(qMatrix,1)
     %tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
 
         % can use either line 
-%       [~, tr] = ur3.model.fkine(ur3.model.getpos);
+       %[~, tr] = ur3.model.fkine(ur3.model.getpos);
           %error "q must have 7 columns error"
      [~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
 
@@ -221,7 +242,6 @@ for qIndex = 1:size(qMatrix,1)
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
                 plot3(intersectP(1),intersectP(2),intersectP(3),'r*');
-%                 q1 = 
                 display('UR3 is at a collison');
                 result = true;
                 if returnOnceFound

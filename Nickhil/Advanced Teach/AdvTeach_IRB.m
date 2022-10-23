@@ -7,10 +7,9 @@ pendant = VirtualTeachPendant;
 %% Set up robot
 
 robot = IRB_910sc;                   % Create copy called 'robot'
-robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
+%robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
 
-%robot.model.teach;
-
+teach
 %% Start "real-time" simulation
 q = zeros(1,3);                 % Set initial robot configuration 'q'
 
@@ -32,7 +31,6 @@ while( toc < duration)
     %[axes, buttons, povs] = read(joy);
           axes = pendant.read;
  
-          robot.model.teach;
     % -------------------------------------------------------------
     % YOUR CODE GOES HERE
     % 1 - turn joystick input into an end-effector velocity command
