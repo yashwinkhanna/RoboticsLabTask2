@@ -5,7 +5,7 @@ pendant = VirtualTeachPendant;
 
 %% Set up robot
 
-robot = LinearUR3(false);                   % Create copy called 'robot'
+robot = Linear_UR3(false);                   % Create copy called 'robot'
 robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
 
 %robot.model.teach;
@@ -14,7 +14,7 @@ robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
 q = zeros(1,7);                 % Set initial robot configuration 'q'
 
 HF = figure(1);         % Initialise figure to display robot
-robot.model.plot3d(q);          % Plot robot in initial configuration
+robot.model.plot3d(q,'workspace',[-2 2 -2 2 -0.67 2]);          % Plot robot in initial configuration
 robot.model.delay = 0.001;    % Set smaller delay when animating
 set(HF,'Position',[0.1 0.1 0.8 0.8]);
 
@@ -50,7 +50,7 @@ while( toc < duration)
     % 2 - use DLS J inverse to calculate joint velocity
     lambda = 0.5;
     J = robot.model.jacob0(q);
-    Jinv_dls = inv((J'*J)+lambda^2*eye(6))*J';
+    Jinv_dls = inv((J'*J)+lambda^2*eye(7))*J';
     dq = Jinv_dls*dx;
     
     % 3 - apply joint velocity to step robot joint angles 
