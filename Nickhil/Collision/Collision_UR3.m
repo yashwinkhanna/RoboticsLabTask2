@@ -7,20 +7,20 @@ close all;
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%ENVIRONMENT 
+    %% ENVIRONMENT 
 
     %Plate coords - ONLY NEED TO CHANGE THIS
-plate_coords = [-0.5,-1,0.3]; 
+plate_stack = [-0.6,0.1,0]; 
 
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.00]); hold on;
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.02]); hold on;
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.04]); hold on;
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.06]); hold on;
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.08]); hold on;
-    PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.10]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.00]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.02]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.04]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.06]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.08]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.10]); hold on;
 
     %Rectangular prism coords and side length
-centerpnt = [plate_coords(1),plate_coords(2),plate_coords(3)+0.07];
+centerpnt = [plate_stack(1),plate_stack(2),plate_stack(3)+0.07];
 side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -32,11 +32,12 @@ q = zeros(1,7);
 ur3 = Col_Linear_UR3(false);
 
      %UR3 Start and end point 
- q1 = [   0,0,pi/4,85*pi/180,0,0,0];
- q2 = ur3.model.ikcon(transl(plate_coords)*trotx(pi),q1); 
+ q1 = [   0,0,0,85*pi/180,0,0,0];
+ q2 = ur3.model.ikcon(transl(plate_stack)*trotx(pi),q1); 
 %q2 = [-0.8,0,0,0,0,0,2*pi]; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% PROCESS
 
     %Get the transform of every joint (i.e. start and end of every link)
 tr =zeros(4,4,ur3.model.n+1);
