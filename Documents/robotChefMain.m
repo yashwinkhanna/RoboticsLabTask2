@@ -1,7 +1,7 @@
 %% LAB TASK 2 - PANCAKE CHEF
 %  MASTER MAIN FILE
 %  Nickhil Naiker - 
-%  Stefano Mazzotta - 
+%  Stefano Mazzotta - 13537826
 %  Yashwin Khanna - 12919116
 
 % 22/10
@@ -25,6 +25,7 @@ clf
 clear all    
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
 estop = GUItest;
+%leds = LEDTrafficLight;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create robots and environment           
@@ -51,7 +52,7 @@ hold on;
 PlaceObject('griddle.ply', [-0.55,-0.15,0]);     %Loading in kitchen environment
 hold on;
 
-enviro = 0;
+enviro = 1;
 if enviro == 1
     environmentRPC;
 end
@@ -97,6 +98,9 @@ q1 = irb.model.ikine(transl(cakepos_irb) * trotx(pi), q, [1,1,1,0,0,0]);
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q,q1,50);
 
+
+booleantrafficlightgreen = 1;
+
     %Put the jtraj to action usiing for loop 
      for i = 1:50
          pause(0.01);
@@ -104,6 +108,7 @@ path = jtraj (q,q1,50);
          drawnow()         %drawnow() displays the arm movement in figure
          isEStop;
      end
+     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 2) Make IRB dispensing line
@@ -161,6 +166,8 @@ delete(blastPlot_h);       %stop dispensing projection line
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q1,qh,50);
 
+booleantrafficlightgreen = 1;
+
     %Put the jtraj to action usiing for loop 
      for i = 1:50
         pause(0.01);
@@ -174,6 +181,7 @@ path = jtraj (q1,qh,50);
         
         isEStop;
      end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5) Move UR3 to pancake position
@@ -195,6 +203,8 @@ q1 = [-0.7400         0    0.5341    1.8221    0.7854    1.5708         0];
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q,q1,50);
 
+booleantrafficlightgreen = 1;
+
     %Put the jtraj to action usiing for loop 
      for i = 1:50
         pause(0.01);
@@ -215,7 +225,7 @@ path = jtraj (q,q1,50);
       
       isEStop;
      end
-         
+
      
 pause(1);
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -223,6 +233,8 @@ pause(1);
 rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.06, 1);
 cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 delete(p150);
+
+booleantrafficlightgreen = 1;
 
 for i = 1:resolve.steps
   pause(0.01);    
@@ -256,6 +268,8 @@ alpha = 180/steps;
 spat_face = spat_pos;
 spat_face(3) = spat_pos(3) + 0.05;
 
+booleantrafficlightgreen = 1;
+
 for i = 1:steps
     pause(0.01);
     ur3.model.animate(path(i,:));
@@ -282,6 +296,7 @@ for i = 1:steps
 %     cake.brick{1}.base(3,4) = cake.brick{1}.base(3,4) + offset_z;
 %     cake.brick{1}.animate(0);
 end
+
 
 delete(cake_now);
 
@@ -333,3 +348,8 @@ cake_now = PlaceObject('pancake_150.ply', cakepos_irb);
 % % resolve.axial(ur3, 'x', ur3.model.fkine(q1), -0.1);
 % % 
 
+if booleantrafficlightgreen == 1
+    delete(trafficlightgreen);
+    trafficlightred = PlaceObject('trafficlightred.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
+    hold on;
+end
