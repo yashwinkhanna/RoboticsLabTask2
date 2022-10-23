@@ -5,50 +5,42 @@ function [  ] = Collision_UR3( )
 clf
 close all;
 set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window on the right hand side  
-% 2.1: Make a 3DOF model
-% L1 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi pi]);
-% L2 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi pi]);
-% L3 = Link('d',0,'a',1,'alpha',0,'qlim',[-pi pi]);       
-% robot = SerialLink([L1 L2 L3],'name','myRobot');                     
-% q = zeros(1,3);                                                     % Create a vector of initial joint angles        
-% scale = 0.5;
-% workspace = [-2 2 -2 2 -0.05 2];                                       % Set the size of the workspace when drawing the robot
-% robot.plot(q,'workspace',workspace,'scale',scale);                  % Plot the robot
-%   
+
 
     %plate stack - to cover cube
-PlaceObject('plate.ply', [-0.75,0,0]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,0,0.02]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,0,0.04]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,0,0.06]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,0,0.08]);     %Loading in kitchen environment
-hold on;
-PlaceObject('plate.ply', [-0.75,0,0.1]);     %Loading in kitchen environment
-hold on;
+% PlaceObject('plate.ply', [-0.75,0,0]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,0,0.02]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,0,0.04]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,0,0.06]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,0,0.08]);     %Loading in kitchen environment
+% hold on;
+% PlaceObject('plate.ply', [-0.75,0,0.1]);     %Loading in kitchen environment
+% hold on;
+plate_coords = [-0.75,-0.5,0.04];
 
-% PlaceObject('plate.ply', [-0.75,-0.5,0.04]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,-0.5,0.06]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,-0.5,0.08]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,-0.5,0.10]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,-0.5,0.12]);     %Loading in kitchen environment
-% hold on;
-% PlaceObject('plate.ply', [-0.75,-0.5,0.14]);     %Loading in kitchen environment
-% hold on;
+PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.00]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [plate_coords(1),plate_coords(2),plate_coords(3)+0.02]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [plate_coords(1,1),plate_coords(1,2),plate_coords(1,3)+0.04]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [plate_coords(1,1),plate_coords(1,2),plate_coords(1,3)+0.06]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.75,-0.5,0.12]);     %Loading in kitchen environment
+hold on;
+PlaceObject('plate.ply', [-0.75,-0.5,0.14]);     %Loading in kitchen environment
+hold on;
 
 q = zeros(1,7);
 ur3 = Col_Linear_UR3(false);
 
 % 2.2: Put a cube with sides 1.5 m in the environment at [2,0,-0.5]
-centerpnt = [-0.75,0,0.1];
-%centerpnt = [-0.75,-0.5,0.2];
+%centerpnt = [-0.75,0,0.1];
+centerpnt = [-0.75,-0.5,0.2];
 side = 0.2;
 plotOptions.plotFaces = true;
 [vertex,faces,faceNormals] = RectangularPrism(centerpnt-side/2, centerpnt+side/2,plotOptions);
@@ -57,15 +49,7 @@ camlight
 
 %2.3: Use teach and note when the links of the robot can collide with 4 of
 %the planes 
-    % pPoints = [1.25,0,-0.5 ...
-    %         ;2,0.75,-0.5 ...
-    %         ;2,-0.75,-0.5 ...
-    %         ;2.75,0,-0.5];
-    % pNormals = [-1,0,0 ...
-    %             ; 0,1,0 ...
-    %             ; 0,-1,0 ...
-    %             ;1,0,0];
- %ur3.model.teach;
+ ur3.model.teach;
 
 % 2.4: Get the transform of every joint (i.e. start and end of every link)
 tr = zeros(4,4,ur3.model.n+1);
@@ -74,25 +58,15 @@ L = ur3.model.links;
 for i = 1 : ur3.model.n
     tr(:,:,i+1) = tr(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
 end
-% 
-% % 2.5: Go through each link and also each triangle face
-% for i = 1 : size(tr,7)-1    
-%     for faceIndex = 1:size(faces,1)
-%         vertOnPlane = vertex(faces(faceIndex,1)',:);
-%         [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
-%         if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
-%             plot3(intersectP(1),intersectP(2),intersectP(3),'g*');
-%             display('UR3 is at a collison');
-%         end
-%     end    
-% end
  
 % 2.6: Go through until there are no step sizes larger than 1 degree
-q1 = [   0,0,pi/4,85*pi/180,0,0,0];
-q2 = [-0.8,0,pi/4,85*pi/180,0,0,2*pi]; %% !!!!! change col 7 back to 0
+% q1 = [   0,0,pi/4,85*pi/180,0,0,0];
+% q2 = [-0.8,0,pi/4,85*pi/180,0,0,2*pi]; %% !!!!! change col 7 back to 0
 
-% q1 = [   0,0,0,0,0,0,0];
-% q2 = [-0.8,0,0,0,0,0,2*pi]; %% !!!!! change col 7 back to 0
+%q2 = ur3.model.ikcon(transl(-0.75, 0, 0)*trotx(pi),q1); 
+
+q1 = [   0,0,0,0,0,0,0];
+q2 = [-0.8,0,0,0,0,0,2*pi]; %% !!!!! change col 7 back to 0
 
     steps = 2;
 
@@ -110,20 +84,11 @@ for i = 1: steps
         result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
         display(result(i));
         if result(i) == 1
-%             for j = 1:ur3.model.n
-%                 qMatrix(:, j) = qMatrix(i, j);
-%             end
+            for j = 1:ur3.model.n %iterating through 1-7 links 
+                qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current for loop index
+            end
             
-            qMatrix(:, 1) = qMatrix(i, 1); %overwrite all values in matrix with qmatrix value of current for loop index
-                
-                %will adding these account for all joints?
-            qMatrix(:, 2) = qMatrix(i, 2); %overwrite all values in matrix with qmatrix value of current for loop index
-            qMatrix(:, 3) = qMatrix(i, 3); %overwrite all values in matrix with qmatrix value of current for loop index
-            qMatrix(:, 4) = qMatrix(i, 4); %overwrite all values in matrix with qmatrix value of current for loop index
-            qMatrix(:, 5) = qMatrix(i, 5); %overwrite all values in matrix with qmatrix value of current for loop index
-            qMatrix(:, 6) = qMatrix(i, 6); %overwrite all values in matrix with qmatrix value of current for loop index
-            qMatrix(:, 7) = qMatrix(i, 7); %overwrite all values in matrix with qmatrix value of current for loop index
-
+            %qMatrix(:, 1) = qMatrix(i, 1); %overwrite all values in matrix with qmatrix value of current for loop index            
         end
         ur3.model.animate(qMatrix(i,:));
         drawnow()
@@ -275,7 +240,7 @@ for qIndex = 1:size(qMatrix,1)
             vertOnPlane = vertex(faces(faceIndex,1)',:);
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
-                plot3(intersectP(1),intersectP(2),intersectP(3),'b*');
+                plot3(intersectP(1),intersectP(2),intersectP(3),'r*');
 %                 q1 = 
                 display('UR3 is at a collison');
                 result = true;
