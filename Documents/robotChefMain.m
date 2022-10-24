@@ -75,7 +75,7 @@ plate_obj = PlaceObject('plate.ply', [plate_stack(1), plate_stack(2), plate_stac
 %     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.08]); hold on;
 %     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.10]); hold on;
 
-enviro = 0;
+enviro = 1;
 if enviro == 1
     environmentRPC;
 end
@@ -120,6 +120,8 @@ q1 = irb.model.ikine(transl(cakepos_irb) * trotx(pi), q, [1,1,1,0,0,0]);
     %jtraj creates a path between one set of joint positions (q) and a second
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q,q1,50);
+
+booleantrafficlightgreen = 1;
 
     %Put the jtraj to action usiing for loop 
      for i = 1:50
@@ -185,6 +187,8 @@ delete(blastPlot_h);       %stop dispensing projection line
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q1,qh,50);
 
+booleantrafficlightgreen = 1;
+
     %Put the jtraj to action usiing for loop 
      for i = 1:50
         pause(0.01);
@@ -219,6 +223,8 @@ q1 = [-0.7400         0    0.5341    1.8221    0.7854    1.5708         0];
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q,q1,50);
 
+booleantrafficlightgreen = 1;
+
     %Put the jtraj to action usiing for loop 
      for i = 1:50
         pause(0.01);
@@ -247,6 +253,8 @@ pause(1);
 rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q1), 0.06, 1);
 cake_now = PlaceObject('pancake_150.ply', cakepos);
 delete(p150);
+
+booleantrafficlightgreen = 1;
 
 for i = 1:resolve.steps
   pause(0.01);    
@@ -277,6 +285,8 @@ path = jtraj(q0, q1, steps);
 alpha = 180/steps;
 spat_face = spat_pos;
 spat_face(3) = spat_pos(3) + 0.05;
+
+booleantrafficlightgreen = 1;
 
 for i = 1:steps
     pause(0.01);
@@ -319,6 +329,7 @@ q1(1) = q1(1) + 0.085;
 q1(7) = q1(7) + pi/2;
 % q1 = [-0.6400         0    0.5341    1.8221    0.7854    1.5708         0.01];
 path = jtraj(q0, q1, steps);
+
 for i = 1:steps
     pause(0.01);
     ur3.model.animate(path(i,:));
@@ -328,6 +339,9 @@ end
 % Take spatula down to griddle
 q0 = ur3.model.getpos;
 newm = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), - lift, 1);
+
+booleantrafficlightgreen = 1;
+
 for i = 1:size(newm, 1)
   pause(0.01);    
   ur3.model.animate(newm(i,:)); %Animate plots the arm movement
@@ -367,6 +381,9 @@ q0 = ur3.model.getpos;
 rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), lift, 1);
 % delete(cake_now);
 % cake_now = PlaceObject('pancake_150.ply', cakepos);
+
+booleantrafficlightgreen = 1;
+
 for i = 1:resolve.steps
     pause(0.01);    
     ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -387,6 +404,9 @@ q0 = ur3.model.getpos;
 q1 = q0;
 q1(1) = q1(1) - (cakepos(1) - plate_stack(1)); %works as ur3 base is at 0,0,0 and L(1) is prismatic, therefore q(1) provides distance from 0,0
 path = jtraj(q0, q1, steps);
+
+booleantrafficlightgreen = 1;
+
 for i = 1:steps
     pause(0.01);
     ur3.model.animate(path(i,:));
@@ -413,6 +433,8 @@ path = jtraj(q0, q1, steps);
 alpha = 180/steps;
 spat_face = spat_pos; %spat pos is in line with centre axis of EE, while spat face is the plane coincident with spat surface
 spat_face(3) = spat_pos(3) + 0.05;
+
+booleantrafficlightgreen = 1;
 
 for i = 1:steps
     pause(0.01);
@@ -446,6 +468,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % alpha = 180/steps;
 % spat_face = spat_pos; %spat pos is in line with centre axis of EE, while spat face is the plane coincident with spat surface
 % spat_face(3) = spat_pos(3) + 0.05;
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:steps
 %     pause(0.01);
 %     ur3.model.animate(path(i,:));
@@ -455,6 +480,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % %Move spatula down below one plate from top of stack
 % q0 = ur3.model.getpos; 
 % rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), -lift, 1); 
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:resolve.steps
 % pause(0.01);
 % ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -466,6 +494,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % q1 = q0;
 % q1(1) = q1(1) - 0.13; %works as ur3 base is at 0,0,0 and L(1) is prismatic, therefore q(1) provides distance from 0,0
 % path = jtraj(q0, q1, steps);
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:steps
 %     pause(0.01);
 %     ur3.model.animate(path(i,:));
@@ -477,6 +508,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % % %Move spatula back
 % % q0 = ur3.model.getpos; 
 % % rmMatrix = resolve.axial(ur3, 'y', ur3.model.fkine(q0), -0.2, 1); 
+
+%booleantrafficlightgreen = 1;
+
 % % for i = 1:resolve.steps
 % % pause(0.01);
 % % ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -489,6 +523,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % % %Move spatula forward into stack
 % % q0 = ur3.model.getpos; 
 % % rmMatrix = resolve.axial(ur3, 'y', ur3.model.fkine(q0), 0.2, 1); 
+
+%booleantrafficlightgreen = 1;
+
 % % for i = 1:resolve.steps
 % % pause(0.01);
 % % ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -501,6 +538,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % q1 = q0;
 % q1(1) = q1(1) + 0.13; %works as ur3 base is at 0,0,0 and L(1) is prismatic, therefore q(1) provides distance from 0,0
 % path = jtraj(q0, q1, steps);
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:steps
 %     pause(0.01);
 %     ur3.model.animate(path(i,:));
@@ -512,6 +552,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % 
 % q0 = ur3.model.getpos; 
 % rmMatrix = resolve.axial(ur3, 'y', ur3.model.fkine(q0), 0.2, 1); 
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:resolve.steps
 % pause(0.01);
 % ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -522,6 +565,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % %Take spatula to table level
 % q0 = ur3.model.getpos;
 % newm = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), -0.065, 1);
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:size(newm, 1)
 %   pause(0.01);    
 %   ur3.model.animate(newm(i,:)); %Animate plots the arm movement
@@ -547,6 +593,9 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 % q0 = ur3.model.getpos;
 % rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), 0.06, 0.5);
 % spat_pos = finish_pos;
+
+%booleantrafficlightgreen = 1;
+
 % for i = 1:resolve.steps
 %     pause(0.01);    
 %     ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
@@ -560,5 +609,11 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 %   isEStop;
 % end
 
+%%
 
+if booleantrafficlightgreen == 1
+    delete (trafficlightgreen);
+       trafficlightred = PlaceObject('trafficlightred.ply', [-0.75,0.75,0]);    %Loading traffic cone
+       hold on;
+end
 
