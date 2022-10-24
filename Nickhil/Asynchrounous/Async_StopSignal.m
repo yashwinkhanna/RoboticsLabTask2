@@ -72,7 +72,7 @@ axis equal;
 
 for i = 0.005:0.005:2
 
-    person = PlaceObject('roboticshuman.ply', [person_coords(1,1),person_coords(1,2) - i,person_coords(1,3)]);
+    person = PlaceObject('person_async.ply', [person_coords(1,1),person_coords(1,2) - i,person_coords(1,3)]);
       
         %update person_coords as it moves
     person_coords = [person_coords(1,1),person_coords(1,2) - i,person_coords(1,3)];

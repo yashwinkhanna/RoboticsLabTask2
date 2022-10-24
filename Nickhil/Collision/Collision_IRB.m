@@ -23,7 +23,7 @@ set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window 
  robot_eepos = [-0.9,0.1,0];
 
     %0 = Detection mode, 1 = Avoidance 
- col_mode = 1;
+ col_mode = 0;
 
     %%%%%%%%%%%%%%%%%%%%%%%
 
