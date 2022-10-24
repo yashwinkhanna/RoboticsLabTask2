@@ -1,6 +1,6 @@
 %% Environment Robo Pancake Chef
 
-surf([-2,-2;-2,-2],[-2.6,2;-2.6,2],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
+surf([-2,-2;-2,-2],[-2.6,4;-2.6,4],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
 
 surf([-2,3.25;-2,3.25],[-2.6,-2.6;-2.6,-2.6],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
 
@@ -77,8 +77,8 @@ hold on;
  PlaceObject('chair.ply', [1.6,0,-0.65]); %Loading a chair
  hold on;
 
-% PlaceObject('roboticsfence.ply', [-1,2,-0.7]);     %Loading in fence
-% hold on;
+ PlaceObject('roboticsfence.ply', [-1.5,2,-0.7]);     %Loading in fence
+ hold on;
 
 PlaceObject('roboticscone.ply', [3,1.5,-0.65]);    %Loading traffic cone
 hold on;

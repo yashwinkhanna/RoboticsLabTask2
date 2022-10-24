@@ -16,7 +16,6 @@ if  (0 < x_dist) && (x_dist < 2) && (-0.05 < y_dist) && (y_dist < 0.05)
          
     while(1)
         disp('LEAVE THE AREA')
-            %if something happens break
     end
 end
      %wait and then delete old person

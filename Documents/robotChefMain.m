@@ -42,7 +42,7 @@ hold on; % To retain current plot or graphic
     % Displaying a concrete floor
         % note - the [x,x,x,x],[y,y,y,y],[z,z,z,z] are corner points so we
                  % know where to map the image
-surf([-2,-2;3.25,3.25],[-2.5,2;-2.5,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+surf([-2,-2;3.25,3.25],[-2.5,4;-2.5,4],[-0.65,-0.65;-0.65,-0.65],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
 % surf([-2,-2;-2,-2],[-2.6,2;-2.6,2],[-0.65,-0.65;1.5,1.5],'CData',imread('wall.jpg'),'FaceColor','texturemap');
 
@@ -81,7 +81,7 @@ trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %
 hold on;
 delete(trafficlightyellow);
 
-enviro = 0;
+enviro = 1;
 if enviro == 1
     environmentRPC;
 end
@@ -91,6 +91,15 @@ ur3 = Linear_UR3(false);
 
 % irb.model.teach;                                        %Manually interact with the robots
 % ur3.model.teach;
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            Async_Mode = 0;
+            
+                %Coords for person and laser
+            laser_origin = [1.5,2,0];
+            person_coords = [2.2, 4, -0.65];
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup 
@@ -132,6 +141,12 @@ booleantrafficlightgreen = 1;
          pause(0.01);
          irb.model.animate(path(i,:));     %Animate plots the arm movement. i,: is current ith row and all columns
          drawnow()         %drawnow() displays the arm movement in figure
+
+         %Asyncronous Stop 
+              if Async_Mode == 1
+                 Async_MainImp;
+              end 
+
          isEStop;
      end
 
@@ -177,8 +192,10 @@ anim_speed = 0.5;       %animation speed
 num_cakes = 5;
 p_index = 50;
 p_index0 = p_index;
+cake_now = PlaceObject('pancake_50.ply', cakepos);
 for n = 1:num_cakes
     pause(anim_speed);
+    delete(cake_now)
     cake_now = PlaceObject(['pancake_',num2str(p_index),'.ply'], cakepos);
     p_index = p_index0 + n*25;
     isEStop;
@@ -430,7 +447,7 @@ for i = 1:steps
     isEStop;
 end
 
-%Rotate spat to drop pancake on flate
+%Rotate spat to drop pancake on plate
 q0 = ur3.model.getpos;
 q1 = q0;
 EE_rot = pi;
@@ -454,7 +471,7 @@ for i = 1:steps
 end
 
 delete(cake_now);
-cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate_stack(3)+0.08]);
+cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate_stack(3)+0.095]);
 
 % q00 = zeros(1, 7);
 % q0 = ur3.model.getpos;
@@ -474,3 +491,4 @@ if booleantrafficlightgreen == 1
        hold on;
 end
 
+pause(5);
