@@ -13,6 +13,10 @@ set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window 
     %For collsion avoidance the robot moves to a point you give      
         %it, make sure the plate stack coords are in it's path.
 
+   %Table
+PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
+hold on;
+ 
     %%%%%%%%%%%%%%%%%%%%%%%
 
     %Plate coordinates
@@ -243,7 +247,7 @@ for qIndex = 1:size(qMatrix,1)
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
                 plot3(intersectP(1),intersectP(2),intersectP(3),'r*');
-                display('IRB is at a collison');
+                display('IRB is detecting collison');
                 result = true;
                 if returnOnceFound
                     return

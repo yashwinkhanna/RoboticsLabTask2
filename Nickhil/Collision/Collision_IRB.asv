@@ -1,5 +1,5 @@
 
-function [  ] = Collision_UR3( )
+function [  ] = Collision_IRB( )
 
 clf
 close all;
@@ -8,19 +8,23 @@ set(0,'DefaultFigureWindowStyle','docked')   % Docking the figure to the window 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% ENVIRONMENT 
 
+    %For collision detection the robot moves to the plate stack
+        %cooordinates 
+    %For collsion avoidance the robot moves to a point you give      
+        %it, make sure the plate stack coords are in it's path.
+
    %Table
 PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
 hold on;
-
-    %For collision detection the robot moves to the plate stack
-        %cooordinates 
-    %For collsion avoidance the robot moves to a point -0.4 away
-        %in the x-axis, from the stack of plates 
-
+ 
     %%%%%%%%%%%%%%%%%%%%%%%
 
-    %Plate coords
- plate_stack = [-0.5,-0.1,0]; 
+    %Plate coordinates
+ plate_stack = [-0.75,0,0]; 
+
+    %Robot end-effector 
+        %For Collision Avoidance, where you want robot end-effector to go 
+ robot_eepos = [-0.9,0.1,0];
 
     %0 = Detection mode, 1 = Avoidance 
  col_mode = 0;
@@ -42,31 +46,28 @@ plotOptions.plotFaces = true;
 axis equal
   camlight
   
-      %Create Col_Linear_UR3
-q = zeros(1,7);
-ur3 = Col_Linear_UR3(false);
+      %Create IRB_910sc
+q = zeros(1,3);
+irb = IRB_910sc;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% DETECTION MODE
 
 if col_mode == 0
+      q1 = [0,0,0];
+      q2 = irb.model.ikcon(transl(plate_stack)*trotx(pi),q1); 
     disp('Collsion Detection Mode')
-       
-        %Start and end points 
-    q1 = [0,0,0, 85*pi/180, 0, 0, 0];
-    q2 = ur3.model.ikcon(transl(plate_stack)*trotx(pi),q1);
 
      %Get the transform of every joint (start and end of every link)
-tr =zeros(4,4,ur3.model.n+1);
-tr (:,:, 1) = ur3.model.base;
-L = ur3.model.links;
-for i = 1 : ur3.model.n
+tr =zeros(4,4,irb.model.n+1);
+tr (:,:, 1) = irb.model.base;
+L = irb.model.links;
+for i = 1 : irb.model.n
     tr(:,:,i+1) = tr(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
 end
  
  %Go through q1 to q2 until there are no step sizes > than 1 degree
     steps = 2;
-
 while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
     steps = steps + 1;
 end
@@ -75,15 +76,15 @@ qMatrix = jtraj(q1,q2,steps);
 result = true(steps,1);
     %Iterate through all generated steps
 for i = 1: steps
-      result(i) = IsCollision(ur3,qMatrix(i,:),faces,vertex,faceNormals,false);
+      result(i) = IsCollision(irb,qMatrix(i,:),faces,vertex,faceNormals,false);
       display(result(i));
         %If there is a collision detected
       if result(i) == 1
-          for j = 1:ur3.model.n %iterating through 1-7 links 
+          for j = 1:irb.model.n %iterating through 1-7 links 
               qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current for loop index
           end
       end
-      ur3.model.animate(qMatrix(i,:));
+      irb.model.animate(qMatrix(i,:));
         drawnow()
       pause(0.01);
         %If there is a collision break loop
@@ -98,12 +99,12 @@ end
     %% AVOIDANCE MODE
        
 if col_mode == 1
- q1 = [0,0,pi/4,85*pi/180,pi/4,pi/2,0];
+ q1 = [0,0,0];
     %-0.4 = 0.4 passed plates in x-axis
- q2 = ur3.model.ikcon(transl(plate_stack(1)-0.4,plate_stack(2),plate_stack(3))* trotx(pi),q1); 
+ q2 = irb.model.ikcon(transl(robot_eepos)* trotx(pi),q1); 
     disp('Collsion Avoidance Mode')    
 
-ur3.model.animate(q1);
+irb.model.animate(q1);
     drawnow() %%%%%%%%%%%%%%%added this
 qWaypoints = [q1;q2];
 isCollision = true;
@@ -118,7 +119,7 @@ while (isCollision)
         qMatrixJoin = InterpolateWaypointRadians(qWaypoints(i:i+1,:),deg2rad(10));
 
             %If a path between the waypoints can be made without collision
-        if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+        if ~IsCollision(irb,qMatrixJoin,faces,vertex,faceNormals)
             qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
 
 %             ur3.model.animate(qMatrixJoin);
@@ -131,13 +132,13 @@ while (isCollision)
             qMatrixJoin = InterpolateWaypointRadians([qMatrix(end,:); q2],deg2rad(10));
               
                 %If this possible, animate it and break loop 
-            if ~IsCollision(ur3,qMatrixJoin,faces,vertex,faceNormals)
+            if ~IsCollision(irb,qMatrixJoin,faces,vertex,faceNormals)
                 qMatrix = [qMatrix;qMatrixJoin];
                 
                 %Animate 
             for j=1:size(qMatrix,1)
                 pause(0.05);
-                ur3.model.animate(qMatrix(j,:));
+                irb.model.animate(qMatrix(j,:));
                 drawnow()
             end
                 % Reached goal without collision, so break out
@@ -146,23 +147,23 @@ while (isCollision)
             %Else there is a collision between waypoints, find another path 
         else
             % Randomly pick a new pose that is not in collision
-            qRand = (2 * rand(1,7) - 1) * pi;
+            qRand = (2 * rand(1,3) - 1) * pi;
 
-                %setting limits for link 1 (rail) rand generator so it does
-                %not give it a value outside the rail length 
-            lk1min = -0.8;
-            lk1max = 0;
-            lk1 = lk1min+rand(1,1)*(lk1max-lk1min);
-            qRand(1) = lk1;
+                %setting limits for link 3 (rod) rand generator so it does
+                %not give it a value outside the rod length 
+            rodmin = -0.180;
+            rodmax = 0;
+            rod = rodmin+rand(1,1)*(rodmax-rodmin);
+            qRand(3) = rod;
 
-            while IsCollision(ur3,qRand,faces,vertex,faceNormals)
-                qRand = (2 * rand(1,7) - 1) * pi;
+            while IsCollision(irb,qRand,faces,vertex,faceNormals)
+                qRand = (2 * rand(1,3) - 1) * pi;
 
-                 %setting limits for link 1 (rail) rand generator
-            lk1min = -0.8;
-            lk1max = 0;
-            lk1 = lk1min+rand(1,1)*(lk1max-lk1min);
-            qRand(1) = lk1;
+                 %setting limits for link 3 (rod) rand generator
+            rodmin = -0.180;
+            rodmax = 0;
+            rod = rodmin+rand(1,1)*(rodmax-rodmin);
+            qRand(3) = rod;
 
             end
             qWaypoints =[ qWaypoints(1:i,:); qRand; qWaypoints(i+1:end,:)];
@@ -221,7 +222,7 @@ end
 % This is based upon the output of questions 2.5 and 2.6
 % Given a robot model (robot), and trajectory (i.e. joint state vector) (qMatrix)
 % and triangle obstacles in the environment (faces,vertex,faceNormals)
-function result = IsCollision(ur3,qMatrix,faces,vertex,faceNormals,returnOnceFound)
+function result = IsCollision(irb,qMatrix,faces,vertex,faceNormals,returnOnceFound)
 if nargin < 6
     returnOnceFound = true;
 end
@@ -237,7 +238,7 @@ for qIndex = 1:size(qMatrix,1)
         % can use either line 
        %[~, tr] = ur3.model.fkine(ur3.model.getpos);
           %error "q must have 7 columns error"
-     [~, tr] = ur3.model.fkine(qMatrix(qIndex,:));
+     [~, tr] = irb.model.fkine(qMatrix(qIndex,:));
 
     % Go through each link and also each triangle face
     for i = 1 : size(tr,3)-1    
@@ -246,7 +247,7 @@ for qIndex = 1:size(qMatrix,1)
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
                 plot3(intersectP(1),intersectP(2),intersectP(3),'r*');
-                display('UR3 is detecting collison');
+                display('IRB is  collison');
                 result = true;
                 if returnOnceFound
                     return
@@ -261,11 +262,11 @@ end
 % q - robot joint angles
 % robot -  seriallink robot model
 % transforms - list of transforms
-function [ transforms ] = GetLinkPoses( q, ur3)
+function [ transforms ] = GetLinkPoses( q, irb)
 
-links = ur3.model.links;
+links = irb.model.links;
 transforms = zeros(4, 4, length(links) + 1);
-transforms(:,:,1) = ur3.model.base;
+transforms(:,:,1) = irb.model.base;
 
 for i = 1:length(links)
     L = links(1,i);
