@@ -7,7 +7,7 @@ pendant = VirtualTeachPendant;
 
 robot = Linear_UR3(false);                   % Create copy called 'robot'
 %robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
-
+hold on;
 %robot.model.teach;
 
 %% Start "real-time" simulation
