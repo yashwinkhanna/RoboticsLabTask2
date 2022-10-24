@@ -17,8 +17,8 @@ hold on;
 % hold on;
     %%%%%%%%%%%%%%%%%
 
-PlaceObject('plate.ply', [-1.2,-0.4,0]);     %Loading in kitchen environment
-hold on;
+% PlaceObject('plate.ply', [-1.2,-0.4,0]);     %Loading in kitchen environment
+% hold on;
 
 % PlaceObject('plate.ply', [0.4,-0.5,0]);     %Loading in kitchen environment
 % hold on;
@@ -47,13 +47,13 @@ hold on;
 % PlaceObject('roboticshuman.ply', [-0.5,-1.25,-0.7]);     %Loading in kitchen environment
 % hold on;
 
-PlaceObject('roboticsemergencystop.ply', [-1.25,-0.8,0.05]);     %Loading in kitchen environment
-hold on;
+PlaceObject('roboticsemergencystop.ply', [-1.25,-0.8,0.05]);
+% hold on;
 
 PlaceObject('roboticsfireextinguisher.ply', [-1.5,-1.75,-0.7]);  %Loading fire extinguisher
 hold on;
 
-PlaceObject('roboticsfireextinguisher.ply', [2,-1.75,-0.7]);  %Loading fire extinguisher
+PlaceObject('roboticsfireextinguisher.ply', [2,-1.75,-0.7]);  %Loading fire extinguisher - Don't need 2 extinguishers
 hold on;
 
 % PlaceObject('roboticssafetyhat.ply', [-0.5,-1.25,1.3]);    %Loading a hard safety hat
@@ -65,16 +65,16 @@ hold on;
 PlaceObject('roboticsclock.ply', [1,-0.5,0.05]);  %loading an alarm clock
 hold on;
 
-PlaceObject('pancakemixbottle.ply', [-1.25,0.5,0]); %Loading a camera
+PlaceObject('pancakemixbottle.ply', [-1.25,0.5,0]); %Loading a pancake batter bottle
 hold on;
 
-PlaceObject('pancakemixbottle.ply', [-1.15,0.5,0]); %Loading a camera
+PlaceObject('pancakemixbottle.ply', [-1.15,0.5,0]); %Loading a pancake batter bottle
 hold on;
 
-PlaceObject('jammixbottle.ply', [-1.05,0.5,0]); %Loading a camera
+PlaceObject('jammixbottle.ply', [-1.05,0.5,0]); %Loading a toppings bottle
 hold on;
 
- PlaceObject('chair.ply', [1.6,0,-0.65]); %Loading a camera
+ PlaceObject('chair.ply', [1.6,0,-0.65]); %Loading a chair
  hold on;
 
 % PlaceObject('roboticsfence.ply', [-1,2,-0.7]);     %Loading in fence
@@ -94,10 +94,10 @@ hold on;
 
 PlaceObject('roboticscone.ply', [3,-0.5,-0.65]);    %Loading traffic cone
 hold on;
-
-trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
-hold on;
-
-       trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %Loading traffic cone
-       hold on;
-       delete(trafficlightyellow);
+% 
+% trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
+% hold on;
+% 
+% trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %Loading traffic cone
+% hold on;
+% delete(trafficlightyellow);

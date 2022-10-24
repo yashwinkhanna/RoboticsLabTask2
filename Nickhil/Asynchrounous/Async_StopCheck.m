@@ -1,9 +1,7 @@
-function Async_NoAnimate(obj_coords)
 
 hold on;
 workspace = [-2 2 -2 2 -5.67 5];   
 camlight;
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ENVIRONMENT
@@ -15,37 +13,25 @@ surf([-2,-2;3.25,3.25],[-2.5,2;-2.5,2],[-0.65,-0.65;-0.65,-0.65],'CData',imread(
 
     %Coords for person and laser
 laser_origin = [1.5,2,0];
-
-%         %outside
-% person_coords = [2.2, 4, -0.65];
-
-%         inside
-% person_coords = [2.2 ,2 ,-0.65];
-
-person_coords = obj_coords;
+person_coords = [2.2, 4, -0.65];
 
     %Display environment objects
-PlaceObject('person_async.ply', person_coords);    
- hold on;
-% PlaceObject('lasergate.ply', [3,2, 0.05]);     
-% hold on;
-% PlaceObject('lasergate.ply', [1.5,2,0.05]);  
-% hold on;
-
-
-% function ufo() 
+PlaceObject('lasergate.ply', [3,2, 0.05]);     
+hold on;
+PlaceObject('lasergate.ply', [1.5,2,0.05]);  
+hold on;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LASER BEAMS
 
     %Laser beam 1
-laserStartPnt1 = laser_origin;
-laserEndPnt1 = [3,2,0];
+laserStartPnt = laser_origin;
+laserEndPnt = [3,2,0];
 
 %This projects a line out of the irb end effector 
     %choose colour using hexidecimal
-laserPlot_h = plot3([laserStartPnt1(1),laserEndPnt1(1)],[laserStartPnt1(2),laserEndPnt1(2)],[laserStartPnt1(3),laserEndPnt1(3)],'Color', 'r');
+laserPlot_h = plot3([laserStartPnt(1),laserEndPnt(1)],[laserStartPnt(2),laserEndPnt(2)],[laserStartPnt(3),laserEndPnt(3)],'Color', 'r');
 axis equal;
 
     %Laser beam 2
@@ -68,7 +54,7 @@ axis equal;
 
     %Laser beam 4
 laserStartPnt4 = [1.5,2,-0.2];
-laserEndPnt4 = [1.5,2,-0.2];
+laserEndPnt4 = [3,2,-0.2];
 
 %This projects a line out of the irb end effector 
     %choose colour using hexidecimal
@@ -76,23 +62,35 @@ laserPlot_h4 = plot3([laserStartPnt4(1),laserEndPnt4(1)],[laserStartPnt4(2),lase
 axis equal;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% DIST CALC
+% DISTANCE CALC
 
-x_dist = person_coords(1,1) - laser_origin(1,1)
-y_dist = person_coords(1,2) - laser_origin(1,2)
+% x_dist = person_coords(1,1) - laser_origin(1,1);
+% y_dist = person_coords(1,2) - laser_origin(1,2);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CONCLUSION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ANIMATE PERSON
 
-if (0 < x_dist) && (x_dist < 2) && (-0.05 < y_dist) && (y_dist < 0.05)
-    disp("LEAVE THE AREA")
-else 
-    disp("HAVE A NICE DAY")
-end 
+for i = 0.005:0.005:2
 
+    person = PlaceObject('roboticshuman.ply', [person_coords(1,1),person_coords(1,2) - i,person_coords(1,3)]);
+      
+        %update person_coords as it moves
+    person_coords = [person_coords(1,1),person_coords(1,2) - i,person_coords(1,3)];
+        %distance between person and laser
+    x_dist = person_coords(1,1) - laser_origin(1,1)
+    y_dist = person_coords(1,2) - laser_origin(1,2)
+ 
+            %check if person passing laser 
+    if  (0 < x_dist) && (x_dist < 2) && (-0.05 < y_dist) && (y_dist < 0.05)
+        disp("LEAVE THE AREA")
+            %exit animation
+        break
+    end 
+        %wait and then delete old person
+    pause(0.1);
+    delete(person);
 end
 
-
-
-
-
+    %delete here for re-running figure
+pause(5);
+delete(person);
