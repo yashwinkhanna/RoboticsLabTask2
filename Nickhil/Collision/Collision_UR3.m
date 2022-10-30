@@ -51,7 +51,7 @@ ur3 = Col_Linear_UR3(false);
 
 if col_mode == 0
     disp('Collsion Detection Mode')
-       
+           
         %Start and end points 
     q1 = [0,0,0, 85*pi/180, 0, 0, 0];
     q2 = ur3.model.ikcon(transl(plate_stack)*trotx(pi),q1);

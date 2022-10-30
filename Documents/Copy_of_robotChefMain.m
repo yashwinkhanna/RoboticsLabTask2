@@ -75,13 +75,13 @@ plate_obj = PlaceObject('plate.ply', [plate_stack(1), plate_stack(2), plate_stac
 %     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.08]); hold on;
 %     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.10]); hold on;
 
-trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
-hold on;
-trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %Loading traffic cone
-hold on;
-delete(trafficlightyellow);
+% trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
+% hold on;
+% trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %Loading traffic cone
+% hold on;
+% delete(trafficlightyellow);
 
-enviro = 1;
+enviro = 0;
 if enviro == 1
     environmentRPC;
 end
@@ -93,7 +93,7 @@ ur3 = Linear_UR3(false);
 % ur3.model.teach;
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            Async_Mode = 1;
+            Async_Mode = 0;
             
                 %Coords for person and laser
             laser_origin = [1.5,2,0];
@@ -104,55 +104,14 @@ ur3 = Linear_UR3(false);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup 
 
-PlaceObject('lasergate.ply', [3,2, 0.05]);    %Laser gate  
-hold on;
-PlaceObject('lasergate.ply', [1.5,2,0.05]);  % laser gate
-hold on;
-
-%%%%%%%%%%%%%%%
-% LASER BEAMS
-
-    %Laser beam 1
-laserStartPnt = laser_origin;
-laserEndPnt = [3,2,0];
-
-%This projects a line out of the irb end effector 
-    %choose colour using hexidecimal
-laserPlot_h = plot3([laserStartPnt(1),laserEndPnt(1)],[laserStartPnt(2),laserEndPnt(2)],[laserStartPnt(3),laserEndPnt(3)],'Color', 'r');
-axis equal;
-
-    %Laser beam 2
-laserStartPnt2 = [1.5,2,0.2];
-laserEndPnt2 = [3,2,0.2];
-
-%This projects a line out of the irb end effector 
-    %choose colour using hexidecimal
-laserPlot_h2 = plot3([laserStartPnt2(1),laserEndPnt2(1)],[laserStartPnt2(2),laserEndPnt2(2)],[laserStartPnt2(3),laserEndPnt2(3)],'Color', 'r');
-axis equal;
-
-    %Laser beam 3
-laserStartPnt3 = [1.5,2,0.4];
-laserEndPnt3 = [3,2,0.4];
-
-%This projects a line out of the irb end effector 
-    %choose colour using hexidecimal
-laserPlot_h3 = plot3([laserStartPnt3(1),laserEndPnt3(1)],[laserStartPnt3(2),laserEndPnt3(2)],[laserStartPnt3(3),laserEndPnt3(3)],'Color', 'r');
-axis equal;
-
-    %Laser beam 4
-laserStartPnt4 = [1.5,2,-0.2];
-laserEndPnt4 = [3,2,-0.2];
-
-%This projects a line out of the irb end effector 
-    %choose colour using hexidecimal
-laserPlot_h4 = plot3([laserStartPnt4(1),laserEndPnt4(1)],[laserStartPnt4(2),laserEndPnt4(2)],[laserStartPnt4(3),laserEndPnt4(3)],'Color', 'r');
-axis equal;
-
-%%%%%%%%%%%
+% PlaceObject('lasergate.ply', [3,2, 0.05]);    %Laser gate  
+% hold on;
+% PlaceObject('lasergate.ply', [1.5,2,0.05]);  % laser gate
+% hold on;
 
 steps = 50;
 
-resolve = RMRC(); %initialise RMRC class. Class performs traj and movement animations
+%resolve = RMRC(); %initialise RMRC class. Class performs traj and movement animations
 
 offset_y = 0.1;
 offset_z = 0.045;
@@ -183,10 +142,10 @@ booleantrafficlightgreen = 1;
          irb.model.animate(path(i,:));     %Animate plots the arm movement. i,: is current ith row and all columns
          drawnow()         %drawnow() displays the arm movement in figure
 
-%          %Asyncronous Stop 
-%               if Async_Mode == 1
-%                  Async_MainImp;
-%               end 
+         %Asyncronous Stop 
+              if Async_Mode == 1
+                 Async_MainImp;
+              end 
 
          isEStop;
      end
@@ -289,11 +248,11 @@ q = zeros(1,7);
     %ur3_pos coords.
             %note - trotx(pi) makes end-effector face down when going to  
                     %coords, so arm does not go into floor. 
-%     q1 = ur3.model.ikine(transl(cakepos_ur3) * trotx(pi), q, [1,1,1,0,0,0]);
+     q1 = ur3.model.ikcon(transl(cakepos_ur3)*trotx(pi), q);
 % q1 = [-0.1000         0    0.7854    1.5708    0.7854    1.5708         0]
 % q1 = [-0.7400         0    0.7854    1.5708    0.7854    1.5708         0];
 % q1 = [-0.7400         0    0.5341    1.8221    0.7854    1.5708         0];
-q1 = [-0.600         0    0.5341    1.8221    0.7854    1.5708         0];
+%q1 = [-0.600         0    0.5341    1.8221    0.7854    1.5708         0];
     %jtraj creates a path between one set of joint positions (q) and a second
     %set of joint positions (q1) using a certain amount of set increments (50)
 path = jtraj (q,q1,steps);
@@ -317,8 +276,8 @@ for i = 1:steps
 end
 
 q0 = ur3.model.getpos;
-q1 = q0;
-q1(1) = q1(1) - 0.14;
+q1 = ur3.model.ikcon(transl(-0.89, 0, 0.075)*trotx(pi), q);
+
 path = jtraj(q0, q1, steps);
 for i = 1:steps
     pause(0.01);
@@ -332,15 +291,19 @@ pause(1);
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 6) Move UR3 up to lift pancake
 q0 = ur3.model.getpos;
-rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), 0.06, 1);
+%rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), 0.06, 1);
 % cake_now = PlaceObject('pancake_150.ply', cakepos);
 % delete(p150);
 
+q1 = ur3.model.ikcon(transl(-0.89, 0, 0.135)*trotx(pi), q);
+
+path = jtraj(q0, q1, steps);
+
 booleantrafficlightgreen = 1;
 
-for i = 1:resolve.steps
+for i = 1:steps
   pause(0.01);    
-  ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
+  ur3.model.animate(path(i,:)); %Animate plots the arm movement
   drawnow() %drawnow() displays the arm movement in figure 
   
   delete(cake_now);
@@ -389,8 +352,8 @@ cake_now = PlaceObject('pancake_150.ply', cakepos);
 %% 8) Pick up pancake
 % Take spatula to left and rotate
 q0 = ur3.model.getpos;
-q1 = q0;
-q1(1) = q1(1) + 0.085;
+q1 = ur3.model.ikcon(transl(-0.805, 0, 0.135)*trotx(pi), q);
+
 q1(7) = q1(7) + pi/2;
 % q1 = [-0.6400         0    0.5341    1.8221    0.7854    1.5708         0.01];
 path = jtraj(q0, q1, steps);
@@ -403,13 +366,17 @@ end
 
 % Take spatula down to griddle
 q0 = ur3.model.getpos;
-newm = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), - lift, 1);
+q1 = ur3.model.ikcon(transl(-0.89, 0, 0.07)*trotx(pi), q);
+
+path = jtraj(q0, q1, steps);
+
+%newm = resolve.axial(ur3, 'z', ur3.model.fkine(ur3.model.getpos), - lift, 1);
 
 booleantrafficlightgreen = 1;
 
-for i = 1:size(newm, 1)
+for i = 1:steps
   pause(0.01);    
-  ur3.model.animate(newm(i,:)); %Animate plots the arm movement
+  ur3.model.animate(path(i,:)); %Animate plots the arm movement
   drawnow() %drawnow() displays the arm movement in figure   
   isEStop;
 end
@@ -429,8 +396,8 @@ end
 
 % Take spatula to right and rotate 90 - scoop pancake
 q0 = ur3.model.getpos;
-q1 = q0;
-q1(1) = q1(1) - 0.075;
+q1 = ur3.model.ikcon(transl(-0.965, 0, 0.07)*trotx(pi), q);
+
 q1(7) = q1(7) + pi/2;
 % q1 = [-0.6400         0    0.5341    1.8221    0.7854    1.5708         0.01];
 path = jtraj(q0, q1, steps);
@@ -443,15 +410,19 @@ end
 
 %Lift up pancake
 q0 = ur3.model.getpos;
-rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), lift, 1);
+q1 = ur3.model.ikcon(transl(-0.965, 0, 0.135)*trotx(pi), q);
+
+path = jtraj(q0, q1, steps);
+
+%rmMatrix = resolve.axial(ur3, 'z', ur3.model.fkine(q0), lift, 1);
 % delete(cake_now);
 % cake_now = PlaceObject('pancake_150.ply', cakepos);
 
 booleantrafficlightgreen = 1;
 
-for i = 1:resolve.steps
+for i = 1:steps
     pause(0.01);    
-    ur3.model.animate(rmMatrix(i,:)); %Animate plots the arm movement
+    ur3.model.animate(path(i,:)); %Animate plots the arm movement
     drawnow() %drawnow() displays the arm movement in figure 
   
     delete(cake_now);
@@ -466,8 +437,9 @@ end
 
 %Take cake across to plate
 q0 = ur3.model.getpos;
-q1 = q0;
-q1(1) = q1(1) - (cakepos(1) - plate_stack(1)); %works as ur3 base is at 0,0,0 and L(1) is prismatic, therefore q(1) provides distance from 0,0
+q1 = ur3.model.ikcon(transl(-0.465, 0, 0.135)*trotx(pi), q);
+
+%q1(1) = q1(1) - (cakepos(1) - plate_stack(1)); %works as ur3 base is at 0,0,0 and L(1) is prismatic, therefore q(1) provides distance from 0,0
 path = jtraj(q0, q1, steps);
 
 booleantrafficlightgreen = 1;
@@ -512,7 +484,7 @@ for i = 1:steps
 end
 
 delete(cake_now);
-cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate_stack(3)+0.095]);
+cake_now = PlaceObject('pancake_150.ply', [-0.465, plate_stack(2), plate_stack(3)+0.095]);
 
 % q00 = zeros(1, 7);
 % q0 = ur3.model.getpos;
@@ -526,10 +498,10 @@ cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate
 
 %%
 
-if booleantrafficlightgreen == 1
-    delete (trafficlightgreen);
-       trafficlightred = PlaceObject('trafficlightred.ply', [-0.75,0.75,0]);  
-       hold on;
-end
+% if booleantrafficlightgreen == 1
+%     delete (trafficlightgreen);
+%        trafficlightred = PlaceObject('trafficlightred.ply', [-0.75,0.75,0]);  
+%        hold on;
+% end
 
 pause(5);

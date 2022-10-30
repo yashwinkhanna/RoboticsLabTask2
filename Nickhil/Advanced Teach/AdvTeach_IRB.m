@@ -4,46 +4,77 @@
 
 pendant = VirtualTeachPendant;
 
-%% Set up robot
 
-robot = IRB_910sc;                   % Create copy called 'robot'
-%robot.model.tool = transl(0.1,0,0);   % Define tool frame on end-effector
+%% Setting up simulation 
 
-% teach
-%% Start "real-time" simulation
-q = zeros(1,3);                 % Set initial robot configuration 'q'
+robot = IRB_910sc;  %IRB
 
-HF = figure(1);         % Initialise figure to display robot
-robot.model.plot3d(q,'workspace',[-2 2 -2 2 -0.67 2]);          % Plot robot in initial configuration
-robot.model.delay = 0.001;    % Set smaller delay when animating
+q = zeros(1,3);  % Set initial robot configuration 'q'
+
+   %Table
+PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
+hold on;
+
+camlight;
+
+%advteach = 1;
+    %my teach
+%Joint_Controller(robot);
+
+HF = figure(1);  % Initialise figure to display robot
+robot.model.plot3d(q,'workspace',[-2 2 -2 2 -0.67 2]);  % Plot robot in initial configuration
+robot.model.delay = 0.001;  % Set smaller delay when animating
 set(HF,'Position',[0.1 0.1 0.8 0.8]);
 
 duration = 300;  % Set duration of the simulation (seconds)
-dt = 0.15;      % Set time step for simulation (seconds)
+dt = 0.15;       % Set up time step for simulation(seconds)
 
 n = 0;  % Initialise step count to zero 
-tic;    % recording simulation start time
+tic;    % Records simulation start time
+
 while( toc < duration)
     
     n=n+1; % increment step count
 
-    % read joystick
-    %[axes, buttons, povs] = read(joy);
+
+
+
+%% Select Advanced teach Mode  
+
+% if advteach == 0
+%     %Run Robot Controller (by running code below) 
+% end
+% 
+% while advteach == 1
+%         %Run only Joint Controller and nothing else
+%         Joint_Controller(robot)  
+% end
+       
+
+%% Global Cartesian Movements 
+
+    %Calling teach pendant
           axes = pendant.read;
  
-    % -------------------------------------------------------------
-    % YOUR CODE GOES HERE
     % 1 - turn joystick input into an end-effector velocity command
     Kv = 0.3; % linear velocity gain
-    Kw = 0.8; % angular velocity gain
-    
-    vx = Kv*axes(1);
-    vy = Kv*axes(2);
-    vz = Kv*axes(5);
-    
-    wx = Kw*axes(4);
-    wy = Kw*axes(3);
-    wz = Kw*axes(6);
+    Kw = 0.8; %angular velocity gain
+
+        %Multiplying linear velocity gain (Kv) with x,y,z axis to move
+        %robot in each global axis 
+
+    vx = Kv*axes(1); %x
+    vy = Kv*axes(2); %y
+    vz = Kv*axes(3); %z 
+
+         %Multiplying angular velocity gain (Kw) with r,p,y axis to move
+        %robot in each global axis
+
+   wx = Kw*axes(4); %r
+   wy = Kw*axes(5); %p
+
+        %Yaw is the only axis this robot should be able to rotate about
+    wz = Kw*axes(6); %y
     
     dx = [vx;vy;vz;wx;wy;wz]; % combined velocity vector
     
