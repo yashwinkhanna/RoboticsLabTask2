@@ -22,12 +22,8 @@ if button == 1
 end
        
 resume_wait = 0;  %variable: On or OFF toggle to know if to wait for resume button press before killing while loop
-                  %necessary for 2-action resume
+                  %necessary
 
-%%Key principle: if estop is engaged, code will be stuck in while loop
-%%until disengaged. By calling isEstop in every animation loop of robots in
-%%main, we will be stuck in the estop while, preventing the next robot
-%%animation step.
 
 if button == 1 %estop pressed
     resume_wait = 1;% set resume to high
@@ -54,7 +50,7 @@ end
 %     
 % end
 
-%delete yellow and place green once estop disengaged
+
 if booleantrafficlightyellow == 1 && button == 0 %&& booleanresumebutton == 1
     delete(trafficlightyellow);
     booleantrafficlightyellow = 0;
@@ -64,5 +60,3 @@ if booleantrafficlightyellow == 1 && button == 0 %&& booleanresumebutton == 1
     hold on;
     booleantrafficlightgreen = 1;
 end
-
-fprintf('EStop DISENGAGED. Resuming process now...\n');

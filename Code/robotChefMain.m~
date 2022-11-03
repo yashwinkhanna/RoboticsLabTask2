@@ -53,42 +53,41 @@ plate_stack = [-0.35, 0, 0];
 lift = 0.065; %how high we want to lift up the pancake when picking it up/for an action
 cake_H = 0.05; % height of a pancake
 
-%Table
+    %Table
 PlaceObject('newroboticstable.ply', [0,0,-0.0844]);
 hold on;
 
-%Griddle
-PlaceObject('griddle.ply', [-0.55,-0.15,0]);
+PlaceObject('griddle.ply', [-0.55,-0.15,0]);     %Loading in kitchen environment
 hold on;
 
-%Plate pancake to be placed on
 plate_obj = PlaceObject('plate.ply', [plate_stack(1), plate_stack(2), plate_stack(3)+0.08]);
 
-%Plate stack
-PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.00]); hold on;
-PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.02]); hold on;
-PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.04]); hold on;
-PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.06]); hold on;
+% plate_stack = [-0.6,0.1,0]; 
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.00]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.02]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.04]); hold on;
+    PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.06]); hold on;
+%     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.08]); hold on;
+%     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.10]); hold on;
 
-%Status traffic lights
-trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]); 
+trafficlightgreen = PlaceObject('trafficlightgreen.ply', [-0.75,0.75,0]);     %Loading in kitchen environment
 hold on;
-trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]); 
+trafficlightyellow = PlaceObject('trafficlightyellow.ply', [-0.75,0.75,0]);    %Loading traffic cone
 hold on;
 delete(trafficlightyellow);
 
-%Prop environment Enable/Disable
 enviro = 1;
 if enviro == 1
     environmentRPC;
 end
 
-%Spawn robots
 irb = IRB_910sc;                                        %Initialise the IRB and UR3 robot
 ur3 = Linear_UR3(false);
 
 % irb.model.teach;                                        %Manually interact with the robots
 % ur3.model.teach;
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup 
@@ -408,7 +407,6 @@ for i = 1:size(newm, 1)
   isEStop;
 end
 
-%Alternate method for lifting pancake using INVERSE KINEMATICS. Did not work
 % q0 = ur3.model.getpos;
 % q1 = ur3.model.ikcon(transl(cakepos_ur3(1) + 0.15...
 %                            ,cakepos_ur3(2)...
@@ -509,7 +507,6 @@ end
 delete(cake_now);
 cake_now = PlaceObject('pancake_150.ply', [plate_stack(1), plate_stack(2), plate_stack(3)+0.095]);
 
-%take ur3 back to 'home' position after plating cake
 % q00 = zeros(1, 7);
 % q0 = ur3.model.getpos;
 % path = jtraj(q0, q00, steps);
