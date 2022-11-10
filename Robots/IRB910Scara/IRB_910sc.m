@@ -31,13 +31,9 @@ classdef IRB_910sc < handle
             name = ['IRB_910sc_',datestr(now,'yyyymmddTHHMMSSFFF')];
             L(1) = Link('d',0.1916,           'a',0.3,        'alpha',0,  'qlim',deg2rad([-140 140]), 'offset',0);
             L(2) = Link('d',0.2577-0.1916,    'a',0.25,       'alpha',0,  'qlim',deg2rad([-150 150]), 'offset',0);
+            %Prismatic link: set sigma (5th coloumn) 0 if revolute, 1 if prismatic
             L(3) = Link([0     0       0       0    1]);
-%             L3 = Link('d',0,         'a',0,          'alpha',0,  'qlim',deg2rad([-400 400]), 'offset', 0);
-            
-%             L3 = Link('d',0.2577*2,         'a',0,          'alpha',0,  'qlim',deg2rad([-400 400]), 'offset', 0);
-%             L4 = Link('d',0.11235,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
-%             L5 = Link('d',0.08535,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
-%             L6 = Link('d',0.0819,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
+%            L3 = Link('d',0,         'a',0,          'alpha',0,  'qlim',deg2rad([-400 400]), 'offset', 0);
             
             L(3).qlim = [-0.180 0];
 

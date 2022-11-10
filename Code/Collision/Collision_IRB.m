@@ -27,7 +27,7 @@ hold on;
  robot_eepos = [-0.9,0.1,0];
 
     %0 = Detection mode, 1 = Avoidance 
- col_mode = 1;
+ col_mode = 0;
 
     %%%%%%%%%%%%%%%%%%%%%%%
 
@@ -39,6 +39,8 @@ hold on;
     PlaceObject('plate.ply', [plate_stack(1),plate_stack(2),plate_stack(3)+0.10]); hold on;
 
     %Rectangular prism coords and side length
+        %we treat the surface of the prism as triangles (12 triangles
+        %total)
 centerpnt = [plate_stack(1),plate_stack(2),plate_stack(3)+0.07];
 side = 0.2;
 plotOptions.plotFaces = true;
@@ -54,9 +56,12 @@ irb = IRB_910sc;
     %% DETECTION MODE
 
 if col_mode == 0
-      q1 = [0,0,0];
-      q2 = irb.model.ikcon(transl(plate_stack)*trotx(pi),q1); 
     disp('Collsion Detection Mode')
+
+        % Start point 
+    q1 = [0,0,0];
+        %Finish point
+    q2 = irb.model.ikcon(transl(plate_stack)*trotx(pi),q1); 
 
      %Get the transform of every joint (start and end of every link)
 tr =zeros(4,4,irb.model.n+1);
@@ -66,8 +71,9 @@ for i = 1 : irb.model.n
     tr(:,:,i+1) = tr(:,:,i) * trotz(q(i)+L(i).offset) * transl(0,0,L(i).d) * transl(L(i).a,0,0) * trotx(L(i).alpha);
 end
  
- %Go through q1 to q2 until there are no step sizes > than 1 degree
+%Initally set steps = 2 from q1 to q2
     steps = 2;
+%Go through q1 to q2, increasing the steps until there are no step sizes > than 1 degree
 while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
     steps = steps + 1;
 end
@@ -76,12 +82,14 @@ qMatrix = jtraj(q1,q2,steps);
 result = true(steps,1);
     %Iterate through all generated steps
 for i = 1: steps
+        %Checking IsCollision function, which checks for LinePlaneIntersection and 
+        %IsIntersectionPointInsideTriangle
       result(i) = IsCollision(irb,qMatrix(i,:),faces,vertex,faceNormals,false);
       display(result(i));
         %If there is a collision detected
       if result(i) == 1
           for j = 1:irb.model.n %iterating through 1-7 links 
-              qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current for loop index
+              qMatrix(:, j) = qMatrix(i, j); %overwrite all values in matrix with qmatrix value of current joint angles for loop index (to make it not go beyond collision)
           end
       end
       irb.model.animate(qMatrix(i,:));
@@ -99,17 +107,21 @@ end
     %% AVOIDANCE MODE
        
 if col_mode == 1
- q1 = [0,0,0];
-    %-0.4 = 0.4 passed plates in x-axis
- q2 = irb.model.ikcon(transl(robot_eepos)* trotx(pi),q1); 
     disp('Collsion Avoidance Mode')    
 
+         % Start and end point
+ q1 = [0,0,0];
+ q2 = irb.model.ikcon(transl(robot_eepos)* trotx(pi),q1); 
+
+    %Animate start
 irb.model.animate(q1);
-    drawnow() %%%%%%%%%%%%%%%added this
+    drawnow() 
+
 qWaypoints = [q1;q2];
 isCollision = true;
 checkedTillWaypoint = 1;
 qMatrix = [];
+
 while (isCollision)
     startWaypoint = checkedTillWaypoint;
         %Keep iterating for the amount of waypoints there are between q1,
@@ -121,10 +133,6 @@ while (isCollision)
             %If a path between the waypoints can be made without collision
         if ~IsCollision(irb,qMatrixJoin,faces,vertex,faceNormals)
             qMatrix = [qMatrix; qMatrixJoin]; %#ok<AGROW>
-
-%             ur3.model.animate(qMatrixJoin);
-%                 drawnow() %%%%%%%%%%%%%%%added this
-            %size(qMatrix)
 
             isCollision = false;
             checkedTillWaypoint = i+1;
@@ -149,7 +157,7 @@ while (isCollision)
             % Randomly pick a new pose that is not in collision
             qRand = (2 * rand(1,3) - 1) * pi;
 
-                %setting limits for link 3 (rod) rand generator so it does
+                %Setting limits for link 3 (rod) rand generator so it does
                 %not give it a value outside the rod length 
             rodmin = -0.180;
             rodmax = 0;
@@ -159,7 +167,8 @@ while (isCollision)
             while IsCollision(irb,qRand,faces,vertex,faceNormals)
                 qRand = (2 * rand(1,3) - 1) * pi;
 
-                 %setting limits for link 3 (rod) rand generator
+                 %Again setting limits for link 3 (rod) rand generator so 
+                 %it does not give value outside rod length
             rodmin = -0.180;
             rodmax = 0;
             rod = rodmin+rand(1,1)*(rodmax-rodmin);
@@ -183,10 +192,10 @@ end
     % FUNCTIONS USED
 
 %% IsIntersectionPointInsideTriangle
-% Given a point which is known to be on the same plane as the triangle
-% determine if the point is 
-% inside (result == 1) or 
-% outside a triangle (result ==0 )
+
+% Given a point which is known to be on the same plane as the triangle, determine if the point is inside (result == 1) or 
+% outside a triangle (result == 0 ).
+
 function result = IsIntersectionPointInsideTriangle(intersectP,triangleVerts)
 
 u = triangleVerts(2,:) - triangleVerts(1,:);
@@ -215,13 +224,14 @@ if (t < 0.0 || (s + t) > 1.0)  % intersectP is outside Triangle
     return;
 end
 
-result = 1;                      % intersectP is in Triangle
+result = 1;                    % intersectP is inside Triangle
 end
 
 %% IsCollision
-% This is based upon the output of questions 2.5 and 2.6
-% Given a robot model (robot), and trajectory (i.e. joint state vector) (qMatrix)
-% and triangle obstacles in the environment (faces,vertex,faceNormals)
+
+% Syntax = robot model (irb), and trajectory (i.e. joint state vector) (qMatrix) and triangle obstacles in the environment 
+% (faces,vertex,faceNormals)
+
 function result = IsCollision(irb,qMatrix,faces,vertex,faceNormals,returnOnceFound)
 if nargin < 6
     returnOnceFound = true;
@@ -230,22 +240,22 @@ result = false;
 
 for qIndex = 1:size(qMatrix,1)
     % Get the transform of every joint (i.e. start and end of every link)
-
-        %original line from lab - commented out and replaced with line below to show collision      
-        %points 
-    %tr = GetLinkPoses(qMatrix(qIndex,:), ur3);
-
-        % can use either line 
-       %[~, tr] = ur3.model.fkine(ur3.model.getpos);
-          %error "q must have 7 columns error"
+            %the original line from Lab 5 was commented out and replaced with line below because collision was not working 
+   
+     %tr = GetLinkPoses( qMatrix(qIndex, :), ur3);
      [~, tr] = irb.model.fkine(qMatrix(qIndex,:));
 
     % Go through each link and also each triangle face
     for i = 1 : size(tr,3)-1    
         for faceIndex = 1:size(faces,1)
             vertOnPlane = vertex(faces(faceIndex,1)',:);
+
+                %First, checks if a plane coincident (in line) with the rectangular prism, intersects with a robot's link 
             [intersectP,check] = LinePlaneIntersection(faceNormals(faceIndex,:),vertOnPlane,tr(1:3,4,i)',tr(1:3,4,i+1)'); 
+                
+                %Next, it checks if this intersection on the plane, lies within a triangle face on the rectangular prism  
             if check == 1 && IsIntersectionPointInsideTriangle(intersectP,vertex(faces(faceIndex,:)',:))
+                %Red dot
                 plot3(intersectP(1),intersectP(2),intersectP(3),'r*');
                 display('IRB is detecting collison');
                 result = true;
@@ -259,9 +269,8 @@ end
 end
 
 %% GetLinkPoses
-% q - robot joint angles
-% robot -  seriallink robot model
-% transforms - list of transforms
+% Syntax: q = the robots joint angle positions, irb = seriallink robot model and transforms = the list of transforms
+
 function [ transforms ] = GetLinkPoses( q, irb)
 
 links = irb.model.links;
@@ -282,6 +291,10 @@ end
 %% FineInterpolation
 % Use results from Q2.6 to keep calling jtraj until all step sizes are
 % smaller than a given max steps size
+%
+% Interpolating until waypoints between q0, q1 are smaller than a set
+% degree.
+
 function qMatrix = FineInterpolation(q1,q2,maxStepRadians)
 if nargin < 3
     maxStepRadians = deg2rad(1);
@@ -296,6 +309,11 @@ end
 
 %% InterpolateWaypointRadians
 % Given a set of waypoints, finely intepolate them
+%
+% Interpolating is the act of inserting an intermediate value between two other values. 
+    % Since we know q0, q1, we need to interpolate joint angle positions inbetween q0, q1 to create a trajectory of 
+    % waypoints
+
 function qMatrix = InterpolateWaypointRadians(waypointRadians,maxStepRadians)
 if nargin < 2
     maxStepRadians = deg2rad(1);
